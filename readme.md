@@ -3,14 +3,9 @@ A port of the [Cardiac Risk Visualization SMART Application](https://github.com/
 ) to use an [HL7 FHIR](http://www.hl7.org/implement/standards/fhir/index.htm) v0.10 data source for [lab reports](http://www.hl7.org/implement/standards/fhir/diagnosticreport.htm
 ) and [patient demographics](http://www.hl7.org/implement/standards/fhir/Patient.htm).
 
-# Deploy #
+# Run Locally #
 
-From a console in the project directory, execute:
-
-```gradlew jettyRun```
-
-# Use #
-Open browser to Risk Visualization for [Everywoman Eve](http://localhost:8000/smartapp?personId=1).
+TODO
 
 # Data Source #
 The current data source is Grahame Grieve's HL7 FHIR [reference implementation](http://hl7connect.healthintersections.com.au/svc/fhir).
