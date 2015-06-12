@@ -7,7 +7,7 @@ A port of the [Cardiac Risk Visualization SMART Application](https://github.com/
 
 Fork this project locally. Setup a local web server and run it at:
 * http://localhost:8000/cardiac-risk-app/
-* http://localhost:8000/cardiac-risk-app/launch.html
+* http://localhost:8000/cardiac-risk-app/build/launch.html
 
 You can use the following command to setup the webserver if you like:
 
@@ -17,7 +17,7 @@ At this point, you can now add the fhirServiceUrl endpoint to the app. If you ar
 
 To see the app running, go to your localhost webserver where the cardiac-risk-app project is and open up the launch.html file w/ the fhirServiceUrl endpoint so it looks like the following:
 
-```http://localhost:8000/cardiac-risk-app/launch.html?fhirServiceUrl=https://fhir-open-api.smarthealthit.org&patientId=[insert patient ID number here]```
+```http://localhost:8000/cardiac-risk-app/build/launch.html?fhirServiceUrl=https://fhir-open-api.smarthealthit.org&patientId=[insert patient ID number here]```
 
 
 # Data Source #
