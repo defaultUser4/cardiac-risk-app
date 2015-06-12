@@ -10,11 +10,13 @@ Fork this project locally. Setup a local web server and run it at:
 * http://localhost:8000/cardiac-risk-app/launch.html
 
 You can use the following command to setup the webserver if you like:
+
 ```http-server -p 8000 /path/to/cardiac-risk-app/..```
 
 At this point, you can now add the fhirServiceUrl endpoint to the app. If you are just starting out, you can use the [SmartHealthIt.org](http://docs.smarthealthit.org/tutorials/testing/) open sandbox api (you will need to setup an [account](https://service.smarthealthit.org/private/Login)).
 
 To see the app running, go to your localhost webserver where the cardiac-risk-app project is and open up the launch.html file w/ the fhirServiceUrl endpoint so it looks like the following:
+
 ```http://localhost:8000/cardiac-risk-app/launch.html?fhirServiceUrl=https://fhir-open-api.smarthealthit.org&patientId=[insert patient ID number here]```
 
 
