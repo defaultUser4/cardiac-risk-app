@@ -1,0 +1,37 @@
+{
+  // Enforcing Options
+  "bitwise" : true,
+  "browser": true,
+  "camelcase" : false,
+  "curly" : true,
+  "eqeqeq" : true,
+  "forin" : true,
+  "immed" : true,
+  "indent" : 2,
+  "latedef" : true,
+  "newcap" : true,
+  "noarg" : true,
+  "noempty" : true,
+  "plusplus" : false,
+  "esnext": true,
+  "globals": {},
+  "globalstrict": true,
+  "quotmark": "single",
+  "undef": true,
+  "unused": false,
+  "strict": false,
+  "trailing" : true,
+  "maxlen" : 120,
+  "maxparams" : 8,
+  "maxdepth" : 5,
+  "maxstatements" : 50
+
+  // Relaxing options
+  "globals" : {
+    "$" : false,
+    "console" : false,
+    "XDate" : false,
+    "FHIR" : false,
+    "alert" : false
+  }
+}

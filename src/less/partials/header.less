@@ -1,0 +1,31 @@
+@import (reference) "defaults";
+
+.headerLayout {
+
+  display: table;
+  border-bottom: @defaultBorderSize solid @defaultBorderColor;
+
+  height: 61px;
+  width: 100%;
+}
+
+.headerLeftLayout {
+  display: table-cell;
+  text-align: left;
+  .FontHelveticaNormal(24px, @defaultTextColor);
+  padding-top: 17px;
+  padding-bottom: 15px;
+  padding-left: 21.5px;
+}
+
+.headerRightLayout {
+  display: table-cell;
+  text-align: right;
+  .FontHelveticaNormal(12px, @defaultTextColor);
+  padding-top: 26px;
+  padding-bottom: 21px;
+  padding-right: 21.5px;
+  a {
+    .FontHelveticaNormal(12px, #0092E0);
+  }
+}

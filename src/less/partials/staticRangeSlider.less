@@ -1,0 +1,113 @@
+@import (reference) "defaults";
+
+.rangeSliderHeaderStyle {
+  display: table;
+  width: 100%;
+  .FontHelveticaNormal(14px);
+  margin-bottom: 9px;
+  div {
+    display: table-cell;
+    text-align: left;
+  }
+  span {
+    display: table-cell;
+    text-align: right;
+  }
+}
+
+.iconStyle {
+  padding-left: 6px;
+  height: 12px;
+  color: @blue-Icon;
+}
+
+.headerLeftStyle {
+  .FontHelveticaBold(14px);
+}
+
+.footerLeftStyle {
+  display: table-cell;
+  text-align: left;
+}
+
+.footerRightStyle {
+  display: table-cell;
+  text-align: right;
+}
+
+.rangeSliderFooterStyle {
+  display: table;
+  width: 100%;
+  .FontHelveticaNormal(12px, #A6A9AB);
+  position: relative;
+  top: -33px;
+}
+
+.rangeSliderContentStyle {
+  .displayFlex;
+
+  -webkit-box-orient : vertical;
+  -webkit-box-direction : normal;
+  -webkit-flex-direction : column;
+  -ms-flex-direction : column;
+  flex-direction : column;
+
+  -ms-flex-wrap : nowrap;
+  -webkit-flex-wrap : nowrap;
+  flex-wrap : nowrap
+
+  position: relative;
+  margin: 0;
+}
+
+.rangeSliderBarStyle {
+  height : 12px;
+  width : 100%;
+  position: relative;
+}
+
+.RangeSliderThumbDefaultStyle {
+  margin: 0;
+
+  .alignSelfFlexStart;
+  height : 22px;
+  text-align : center;
+  width: 36px;
+  line-height : 22px;
+  z-index : 10;
+  position : relative;
+  top : -20px;
+  left : 0px;
+  border: 2px solid @white;
+}
+
+.rangeSliderThumbStyle {
+  .RangeSliderThumbDefaultStyle;
+  .FontHelveticaNormal(14px);
+}
+
+.rangeSliderThumbStyleWhite {
+  .RangeSliderThumbDefaultStyle;
+  .FontHelveticaNormal(14px, @white);
+}
+
+.rangeSliderThumbDisplayTextStyle {
+  margin: 0;
+  .FontHelveticaNormal(12px);
+  .alignSelfFlexStart;
+  position: relative;
+  top: -19px;
+  left: 100px;
+}
+
+.barHeightThumbAdjustment {
+  top: -16.5px;
+}
+
+.barHeightThumbTextAdjustment {
+  top: -16px;
+}
+
+.barFooterAdjustment {
+  top: -30px;
+}

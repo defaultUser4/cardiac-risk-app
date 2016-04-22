@@ -1,0 +1,88 @@
+@import "partials/defaults";
+@import "partials/header";
+@import "partials/leftPanel";
+@import "partials/rightPanel";
+@import "partials/staticRangeSlider";
+@import "partials/demographicsBanner";
+
+.contentHeaders {
+  .FontHelveticaNormal(18px, #1C1F21);
+  position: absolute;
+  float: left;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+}
+
+* {
+  vertical-align: top;
+}
+
+.asterisk {
+  color: @requiredFieldColor;
+  padding-right: 3px;
+}
+
+.contentHidden {
+  display: none;
+}
+
+.contentHiddenVisibility {
+  visibility: hidden;
+}
+
+.loadingIndicatorLayout {
+  display: table-cell;
+  height: 100vh;
+  width: 100vw;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.contentErrorLayout {
+  width: 100%;
+  height: 250px;
+  display: inline-block;
+  text-align: center;
+  img {
+    display: inline-block;
+    height: 137px;
+    width: 137px;
+    padding-top: 25px;
+    padding-bottom: 24px;
+  }
+  label {
+    display: block;
+    .FontHelveticaLight(24px, @errorTextColor);
+  }
+}
+
+.contentLayout {
+  display: table;
+  text-align: center;
+  height: 100vh;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  max-width: 1390px;
+
+  @media screen and (max-width: 768px) {
+    border-collapse: collapse;
+  }
+
+  @media screen and (min-width: 1390px) {
+    border-right: @defaultBorderSize solid @defaultBorderColor;
+    border-left: @defaultBorderSize solid @defaultBorderColor;
+  }
+}
+
+input[type="radio"] {
+  margin-right: 5px;
+}
+
+input[type="text"] {
+  margin-right: 5px;
+}

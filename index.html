@@ -1,71 +1,137 @@
 <!DOCTYPE html>
-<html>
-  <!--
-  Original Design: David McCandless & Stefanie Posavec for Wired Magazine <http://informationisbeautiful.net>
-  Implementation: Arjun Sanyal <arjun.sanyal@childrens.harvard.edu>
-  -->
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Cardiology Risk Visualization - FHIR</title>
-    <style>
-      #errors {
-        font-size: 16px;
-        font-family: Calibri, "Helvetica Neue", Helvetica, Verdana, sans-serif;
-        color: #555;
-      }
-    </style>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv='X-UA-Compatible' content='IE=edge' />
+		<meta charset="UTF-8" />
+		<title>Cardiac Risk</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1' />
 
-    <script src="node_modules/fhirclient/fhir-client.js"></script>
-
-    <script src='./lib/jquery.min.js'></script>
-    <script src='./lib/jquery.min.js'></script>
-    <script src='./lib/xdate.js'></script>
-    <script src='./lib/jsonselect.js'></script>
-    <script src='./load_data.js'></script>
-    <script src='./lib/raphael-min.js'></script>
-    <script src='./lib/g.raphael.js'></script>
-    <script src='./draw_visualization.js'></script>
-
-    <script>
-      extractData().then(function(p){
-        var missing_data_array = report_missing_data(p);
-        if (missing_data_array.length > 0) {
-          $('#errors')
-          .show()
-          .html(function(){
-            var out = '<h2>Can\'t Compute Cardiovascular Risk Score</h2><p>Can\'t compute cardiovascular risk score from available data because of the following issues:</p><ul>';
-              $.each(missing_data_array, function(i, v){ out += '<li>' + missing_data_array[i] + '</li>'; }) 
-              return out + '</ul>';
-          });
-
-          return; // abort script
-          } else {
-          $('#holder').show();
-          draw_visualization();
-        }			 
-
-      });
-
-      // checks for data needed to compute risk score. returns a possibly empty array of strings.
-      // if the array is empty everything's ok. TODO: seperate missing and out of range criteria
-      var report_missing_data = function(p){
-        var a = [];
-        if (p.gender.value != 'male' && p.gender.value != 'female') a.push('Gender is required')
-        if (p.sbp.value < 105 || p.sbp.value > 200) a.push('Systolic blood pressure must be between 105 and 200mm/Hg')
-        if (p.cholesterol.value < 140 || p.cholesterol.value > 400) a.push('Total cholesterol must be between 140 and 400mg/dL')
-        if (p.HDL.value < 30 || p.HDL.value > 150) a.push('HDL cholesterol must be between 30 and 150mg/dL')
-        if (p.hsCRP.value < 0.03 || p.hsCRP.value > 20) a.push('hsCRP must be between 0.03 and 20mg/L')
-        if (p.smoker_p.value === false || p.smoker_p.value === true) {} else { a.push('Current smoking status must be defined') }
-        if (p.fx_of_mi_p.value === false || p.fx_of_mi_p.value === true) {} else { a.push('Family history of heart attack before the age of 60 must be defined') }
-        return a;
-      };
-    </script>
-  </head>
-  <body style="margin: none;">
-    <div id='errors' style='display: none; width: 600px; margin: 100px auto;'></div>
-    <div id='holder' style='display: none; height: 1200px; width: 780px;'>
-    </div>
-    <div id='log'></div>
-  </body>
+		<link rel='stylesheet' type='text/css' href='build/stylesheets/cardiac_risk.css'>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	</head>
+	<body>
+		<div id="patientDemographics" class="demographicsHeader contentHidden">
+			<span id="patientName" class="headerPatientName"></span>
+			<div class="headerPatientDetails">
+				<span id="patientAge" class="headerPatientAge"></span><span id="patientGender"></span><span class="patientDOB">DOB: </span><span id="patientDOB"></span>
+			</div>
+		</div>
+		<header id= "pageHeader" class="headerLayout">
+			<span id='pageHeaderLeft' class="headerLeftLayout">Cardiac Risk</span>
+			<span id='pageHeaderRight' class="headerRightLayout">Your cardiac risk is determined by the <a href='http://www.reynoldsriskscore.org/'>Reynolds Risk Score</a>.</span>
+		</header>
+		<div id="pageLoading" class="loadingIndicatorLayout">
+			<span id="spinner" class="fa fa-spinner fa-spin"></span><span>Loading</span>
+		</div>
+		<div id="pageError" class="contentHidden">
+			<img src="images/sysError-med.png" alt="Error Image">
+			<label id="pageErrorLabel"></label>
+		</div>
+		<div id='pageContent' class="contentHidden">
+			<div class="containerLeftLayout">
+				<div class='contentBoxLeft'>
+					<div id="resultsInfo" class='resultsInfoLayout contentHidden'>
+						<div class='contentHeaders'>Results</div>
+						<div id='riskBar' class="riskBarLowRisk">
+							<span id="riskMessage"></span>
+						</div>
+						<div id="riskDescription" class="riskDescriptionLayout">
+							<span id="riskDescriptionText"></span><span id="riskDescriptionValue" class="boldStyle"></span>
+						</div>
+						<div id="whatIfContainer" class="whatIfContainerLayout">
+							<span class="zeroMargin"><b>Your risk would be lowered to:</b></span>
+							<div id='whatIfSBP' class="zeroMargin"><span id="whatIfSBPValue" class="boldStyle"></span> if your blood pressure was <span id="whatIfSBPValueText"></span></div>
+							<div id='whatIfNotSmoker' class="zeroMargin"><span id="whatIfNoSmokerValue" class="boldStyle"></span>  if you quit smoking</div>
+							<div id='whatIfOptimal' class="zeroMargin"><span id="whatIfOptimalValue" class="boldStyle"></span><span id="whatIfOptimalValueText"></span></div>
+						</div>
+					</div><!-- resultsInfo section -->
+					<div id='resultsSliders' class="resultSlidersLayout contentHidden">
+						<div id="cReactiveProteinSlider"></div>
+						<div id="totalCholesterolSlider"></div>
+						<div id="cholesterolSection" class="cholesterolSectionLayout">
+							<div class="cholesterolSectionLineLayout">
+								<div id="rangeSlidersVerticalLine" class="verticalLineFull"></div>
+							</div>
+							<div class="cholesterolSectionContentLayout">
+								<div id="ldlBadCholesterolSlider"></div>
+								<div id="hdlGoodCholesterolSlider"></div>
+							</div>
+						</div>
+					</div>
+				</div><!-- leftColumn of app -->
+			</div>
+			<div class="containerRightLayout">
+				<div id="contentBoxRightTop" class="contentBoxRight">
+					<div id="containerPatientDetails" class="patientDetails">
+						<div class='contentHeaders'>Related Factors</div>
+						<form class="relatedFactorsForms">
+							<fieldset>
+								<legend class="relatedFactorsQuestions"><span id="asteriskSmoker" class="asterisk">*</span>Are you a current smoker?</legend>
+								<p>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="smoker" value="yes">Yes</label>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="smoker" value="no">No</label>
+								</p>
+								<span id="legendSmokerError" class="relatedFactorsErrors">This field is required.</span>
+							</fieldset>
+							<fieldset>
+								<legend class="relatedFactorsQuestions"><span id="asteriskFamilyHistory" class="asterisk">*</span>Have either your mother or father had a heart attack before age 60?</legend>
+								<p>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="familyHeartAttackHistory" value="yes">Yes</label>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="familyHeartAttackHistory" value="no">No</label>
+								</p>
+								<span id="legendFamilyHistoryError" class="relatedFactorsErrors">This field is required.</span>
+							</fieldset>
+							<fieldset>
+								<legend class="relatedFactorsQuestions"><span id="asteriskSBP" class="asterisk">*</span>Systolic Blood Pressure</legend>
+								<div><label class="relatedFactorsAnswersSysBP"><input type="text" id="sbpInput" class="sbpInput" maxlength="3">mmHg</label></div>
+								<span id="legendSysBPError" class="relatedFactorsErrors">Value between 105 - 200 is required.</span>
+							</fieldset>
+							<div class="warningNonDiabetics">*Reynolds Risk Score only applies to non-diabetics.</div>
+						</form>
+					</div> <!-- patientDetails section -->
+				</div>
+				<hr id="horizontalRule" class="hrStyle contentHidden">
+				<div id="contentBoxRightBottom" class="contentBoxRight">
+					<div id="containerPatientActions" class='patientActions contentHiddenVisibility'>
+						<div class='contentHeaders'>Actions</div>
+						<div class="actionsContainer">
+							<div class='actions'>
+								<img class='actionIcons' src='images/smartapp_diet.svg' alt="Diet/Exercise Image">
+								<div class="actionDescription">
+									<header id="contentDietExerciseHeader" class="actionHeaders">Improve your diet and exercise more</header>
+									<p id="contentDietExercise">Continue to eat a healthy diet and exercise. A healthy diet and regular exercise can keep cholesterol levels optimal.</p>
+								</div>
+							</div>
+							<div class='actions'>
+								<img class='actionIcons' src='images/smartapp_doctor.svg' alt="Doctor Image">
+								<div class="actionDescription">
+									<header id="contentDoctorHeader" class="actionHeaders">Talk to your doctor</header>
+									<p id="contentDoctor">Discuss statins or other medications with your primary care provider that can help lower cholesterol.</p>
+								</div>
+							</div>
+							<div class='actions'>
+								<img class='actionIcons' src='images/smartapp_nosmoke.svg' alt="No Smoking Image">
+								<div class="actionDescription">
+									<header id="contentSmokingHeader" class="actionHeaders">Quit Smoking</header>
+									<p id="contentSmoking">By stopping smoking, you can drastically decrease your heart disease risk!</p>
+								</div>
+							</div>
+							<div class='actions'>
+								<img class='actionIcons' src='images/smartapp_retest.svg' alt="Retest Image">
+								<div class="actionDescription">
+									<header id="contentRetestingHeader" class="actionHeaders">Consider retesting</header>
+									<p id="contentRetesting">Retesting in 1 to 2 weeks can help exclude temporary spikes in your blood levels.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!-- main layout of app w/out header -->
+		<script src="../fhir-client-dstu2/fhir-client.min.js"></script>
+		<script src='lib/jquery.min.js'></script>
+		<script src="lib/jquery.tooltipster.min.js"></script>
+		<script src='build/js/cardiac_risk.min.js'></script>
+		<script>$( document ).ready(initialUISetup());</script>
+	</body>
 </html>

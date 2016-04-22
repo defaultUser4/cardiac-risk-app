@@ -1,0 +1,31 @@
+@import (reference) "defaults";
+
+.demographicsHeader {
+  display: table;
+  height: 30px;
+  width: 100%;
+  background-color: @demographicsBannerBackgroundColor;
+  padding: 5px 10px;
+}
+
+.headerPatientName {
+  display: table-row;
+  .FontHelveticaBold(18px,@demographicsBannerTextColor);
+}
+
+.headerPatientDetails {
+  display: table-row;
+  text-align: left;
+  .FontHelveticaBold(16px,@demographicsBannerTextColor);
+}
+
+.headerPatientAge{
+  padding-right: 10px;
+}
+
+.patientDOB {
+  padding-left: 10px;
+  vertical-align: text-bottom;
+  .FontHelveticaNormal(16px,@demographicsBannerTextColor);
+}
+

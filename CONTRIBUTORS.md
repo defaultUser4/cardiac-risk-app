@@ -1,0 +1,6 @@
+* [Josh Mandel](https://github.com/jmandel)
+* [Nikolai Schwertner](https://github.com/nschwertner)
+* [Arjun Sanyal] (https://github.com/arjunsanyal)
+* [Zach Plata](https://github.com/zplata)
+* [Kevin Shekleton](https://github.com/kpshek)
+* [Shriniket Sarkar](https://github.com/shriniketsarkar)

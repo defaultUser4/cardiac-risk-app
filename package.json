@@ -1,7 +1,30 @@
 {
-  "name": "cardiacrisk",
-  "version": "0.1.0",
+  "name": "cardiac-risk-app",
+  "description": "Cardiac Risk SMART app",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
   "dependencies": {
-    "fhirclient": "^0.1.1"
+    "jquery": "^2.1.4"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "fhirclient": "^0.1.1",
+    "grunt": "^0.4.5",
+    "grunt-available-tasks": "^0.5.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-less": "^1.1.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-mocha-phantomjs": "^2.0.1",
+    "http-server": "^0.9.0",
+    "jshint": "^2.9.1",
+    "matchdep": "^0.3.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.15.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smart-on-fhir/cardiac-risk-app.git"
   }
 }

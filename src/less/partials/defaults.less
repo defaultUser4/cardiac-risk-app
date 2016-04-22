@@ -1,0 +1,97 @@
+/*
+  Defaults for colors used in CSS
+*/
+@green : #8CCC62;
+@lightOrange : #FFB166;
+@orange : #FF7D00;
+@red : #E50000;
+@darkRed : #CC0000;
+@lightGray : #C1C1C1;
+@black : #1C1F21;
+@lightGrayError : #C8CACB;
+@white : #FFFFFF;
+@blue-Hyperlink : #0065a3;
+@blue-Icon : #4A90E2;
+@gray : #868A8C;
+@blue-Demographics : #0065a3;
+
+@defaultTextColor : @black;
+@errorTextColor : @lightGrayError;
+@lowRiskColor : @green;
+@lowModerateRiskColor : @lightOrange;
+@moderateRiskColor : @orange;
+@highRiskColor : @red;
+@incompleteStateColor : @gray;
+@requiredFieldColor : @darkRed;
+@defaultBorderColor : @lightGray;
+@demographicsBannerBackgroundColor : @blue-Demographics;
+@demographicsBannerTextColor : @white;
+
+@defaultBorderSize : 1px;
+
+.middleBorder {
+  @media screen and (min-width: 769px) {
+    border-right: @defaultBorderSize solid @defaultBorderColor;
+  }
+}
+
+.FontHelveticaNormal(@fontSize, @color : @defaultTextColor) {
+  font-family: 'HelveticaNeue', 'Helvetica', 'Arial', 'sans-serif';
+  font-weight: normal;
+  font-size: @fontSize;
+  color: @color
+}
+
+.FontHelveticaLight(@fontSize, @color : @defaultTextColor) {
+  font-family: 'HelveticaNeue', 'Helvetica', 'Arial', 'sans-serif';
+  font-weight: lighter;
+  font-size: @fontSize;
+  color: @color
+}
+
+.FontHelveticaBold(@fontSize, @color : @defaultTextColor) {
+  font-family: 'HelveticaNeue', 'Helvetica', 'Arial', 'sans-serif';
+  font-weight: bold;
+  font-size: @fontSize;
+  color: @color
+}
+
+.RoundBordersUsingRadius(@borderRadius : 5px) {
+  border-radius: @borderRadius;
+  -moz-border-radius: @borderRadius;
+  -webkit-border-radius: @borderRadius;
+}
+
+.displayFlex {
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.alignSelfFlexStart {
+  -webkit-align-self: flex-start;
+  -ms-flex-item-align: start;
+  align-self: flex-start;
+}
+
+.backgroundColorHighRisk {
+  background-color: @red;
+}
+
+.backgroundColorLowRisk {
+  background-color: @green;
+}
+
+.backgroundColorModerateRisk {
+  background-color: @orange;
+}
+
+.backgroundColorLowModerateRisk {
+  background-color: @lightOrange;
+}
+
+.colorGray {
+  background-color: @gray;
+}

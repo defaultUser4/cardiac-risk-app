@@ -1,0 +1,132 @@
+@import (reference) "defaults";
+
+.containerLeftLayout {
+  display: table-cell;
+
+  min-width: 425px; // 1px for middle border
+  max-width: 692px; // 1px for middle border
+
+  margin: 0 auto;
+
+  .middleBorder;
+
+  @media screen and (max-width: 768px) {
+    display: table-row;
+    border-bottom: @defaultBorderSize solid @defaultBorderColor;
+  }
+
+}
+
+.contentBoxLeft {
+  display: inline-block;
+
+  padding-top: 22px;
+  padding-left: 21.5px;
+  padding-right: 21.5px;
+
+  max-width: 490px;
+}
+
+.resultsInfoLayout {
+  display: inline-block;
+  text-align: center;
+}
+
+.riskBarLowRisk {
+  .RoundBordersUsingRadius();
+  .RiskBarStyling(@lowRiskColor);
+  .FontHelveticaNormal(30px, @defaultTextColor);
+}
+
+.riskBarLowModerateRisk {
+  .RoundBordersUsingRadius();
+  .RiskBarStyling(@lowModerateRiskColor,310px);
+  .FontHelveticaNormal(30px, @defaultTextColor);
+}
+
+.riskBarModerateRisk {
+  .RoundBordersUsingRadius();
+  .RiskBarStyling(@moderateRiskColor);
+  .FontHelveticaNormal(30px, @defaultTextColor);
+}
+
+.riskBarHighRisk {
+  .RoundBordersUsingRadius();
+  .RiskBarStyling(@highRiskColor);
+  .FontHelveticaNormal(30px, @white);
+}
+
+.riskBarIncomplete {
+  .RoundBordersUsingRadius();
+  .RiskBarStyling(@incompleteStateColor);
+  .FontHelveticaNormal(30px, @white);
+}
+
+.RiskBarStyling(@backgroundColor, @width : 280px, @height: 61px) {
+  display: inline-block;
+
+  width: @width;
+  height: @height;
+  line-height: @height;
+
+
+  margin-top: 29px;
+  margin-bottom: 7px;
+
+  background-color: @backgroundColor;
+}
+
+.riskDescriptionLayout {
+  .FontHelveticaNormal(14px);
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.whatIfContainerLayout {
+  display: inline-block;
+
+  text-align: left;
+
+  padding-top: 40px;
+  width: 100%;
+  .FontHelveticaNormal(14px);
+}
+
+.boldStyle {
+  .FontHelveticaBold(14px);
+}
+
+.resultSlidersLayout {
+  display: inline-block;
+  padding-top: 52px;
+  width: 100%;
+}
+
+.cholesterolSectionLayout {
+  display: table;
+}
+
+.cholesterolSectionLineLayout {
+  display: table-cell;
+}
+
+.verticalLineFull {
+  margin-right: 33px;
+  margin-left: 27px;
+  height: 145px;
+  width: 1px;
+  background-color: @defaultBorderColor;
+}
+
+.verticalLineHalf {
+  margin-right: 33px;
+  margin-left: 27px;
+  height: 73px;
+  width: 1px;
+  background-color: @defaultBorderColor;
+}
+
+.cholesterolSectionContentLayout {
+  display: table-cell;
+  width: 100%;
+}

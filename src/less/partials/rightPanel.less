@@ -1,0 +1,143 @@
+@import (reference) "defaults";
+
+.relatedFactorsQuestions {
+  white-space: normal;
+  width: 100%;
+  .FontHelveticaBold(14px);
+}
+
+.relatedFactorsAnswers {
+  .FontHelveticaNormal(14px);
+}
+
+.relatedFactorsAnswersSysBP {
+  .FontHelveticaNormal(14px, #A6A9AB);
+}
+
+.relatedFactorsErrors {
+  .FontHelveticaNormal(12px, @requiredFieldColor);
+}
+
+.relatedFactorsErrorsHidden {
+  .FontHelveticaNormal(12px, @requiredFieldColor);
+  display: none;
+}
+
+.containerRightLayout {
+  display: table-cell;
+  min-width: 341px;
+  max-width: 697px;
+
+  @media screen and (max-width: 768px) {
+    display: table-row;
+  }
+}
+
+.contentBoxRight {
+  display: table;
+  max-width: 533px;
+  padding-top: 22px;
+  padding-left: 21.5px;
+  padding-right: 21.5px;
+  margin: 0 auto;
+}
+
+.patientDetails {
+  display: table-cell;
+  text-align: left;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 22px;
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin-bottom: 21px;
+    legend {
+      padding: 0;
+    }
+    p {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      margin-left: 14px;
+      padding: 0;
+      label {
+        padding-right: 14px;
+      }
+    }
+    div {
+      margin-left: 3px;
+      margin-bottom: 5px;
+      margin-top: 5px;
+      padding: 0;
+    }
+  }
+}
+
+.sbpInput {
+  width: 42px;
+  height: 22px;
+  text-align: center;
+  padding: 0;
+  border: @defaultBorderSize solid @defaultBorderColor;
+  .RoundBordersUsingRadius(2px);
+}
+
+.warningNonDiabetics {
+  .FontHelveticaNormal(14px);
+  font-style: italic;
+}
+
+.relatedFactorsForms {
+  padding-top: 29px;
+  padding-bottom: 22px;
+}
+
+.hrStyle {
+  width: 100%;
+  border-right: 0px;
+  border-left: 0px;
+  border-top: 0px;
+  border-color: @defaultBorderColor;
+}
+
+.patientActions {
+  display: inline-block;
+  text-align: left;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 22px;
+  }
+}
+
+.actionsContainer {
+  display: table;
+  margin-top: 49px;
+}
+
+.actions{
+  display: table-row;
+  .FontHelveticaNormal(14px);
+}
+
+.actionIcons {
+  display: table-cell;
+  width: 40px;
+  height: 40px;
+  padding-left: 4px;
+  padding-right: 29px;
+}
+
+.actionDescription {
+  display: table-cell;
+  width: 100%;
+  padding-bottom: 54px;
+  p {
+    margin: 0;
+  }
+}
+
+.actionHeaders {
+  .FontHelveticaBold(14px);
+}
