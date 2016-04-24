@@ -155,7 +155,7 @@
    *    3. update UI if the RRS can be calculated.
    */
   function onSBPInput() {
-    var systolicBPValue = document.getElementById('sbpInput').value;
+    var systolicBPValue = parseFloat(document.getElementById('sbpInput').value);
     if (CardiacRisk.isValidSysBP(systolicBPValue))
     {
       // Save the user viewed blood pressure value in our dataObject for future references.
