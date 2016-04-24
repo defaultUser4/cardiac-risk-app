@@ -405,18 +405,18 @@
             (patientInfo.relatedFactors.diabetes ? 1 : 0);
         var elevated = ((((patientInfo.totalCholesterol >= 200 && patientInfo.totalCholesterol < 240) ? 1 : 0) +
             ((patientInfo.systolicBloodPressure >= 140 && patientInfo.systolicBloodPressure < 160 &&
-            patientInfo.relatedFactors.hypertension == false) ? 1 : 0)) >= 1 ? 1 : 0) * (major == 0 ? 1 : 0);
+            patientInfo.relatedFactors.hypertension === false) ? 1 : 0)) >= 1 ? 1 : 0) * (major === 0 ? 1 : 0);
         var allOptimal = (((patientInfo.totalCholesterol < 180 ? 1 : 0) + ((patientInfo.systolicBloodPressure < 120 ? 1 : 0) *
-            (patientInfo.relatedFactors.hypertension ? 0 : 1))) == 2 ? 1 : 0) * (major == 0 ? 1 : 0);
+            (patientInfo.relatedFactors.hypertension ? 0 : 1))) == 2 ? 1 : 0) * (major === 0 ? 1 : 0);
         var notOptimal = ((((patientInfo.totalCholesterol >= 180 && patientInfo.totalCholesterol < 200) ? 1 : 0) +
             ((patientInfo.systolicBloodPressure >= 120 && patientInfo.systolicBloodPressure < 140 &&
-            patientInfo.relatedFactors.hypertension == false) ? 1 : 0)) * (elevated == 0 ? 1 : 0) * (major == 0 ? 1 : 0)) >= 1 ? 1 : 0;
+            patientInfo.relatedFactors.hypertension === false) ? 1 : 0)) * (elevated === 0 ? 1 : 0) * (major === 0 ? 1 : 0)) >= 1 ? 1 : 0;
 
-        if (major > 1) { ascvdRisk = params[patientInfo.gender]["major2"]; }
-        if (major === 1) { ascvdRisk = params[patientInfo.gender]["major1"]; }
-        if (elevated === 1) { ascvdRisk = params[patientInfo.gender]["elevated"]; }
-        if (notOptimal === 1) { ascvdRisk = params[patientInfo.gender]["notOptimal"]; }
-        if (allOptimal === 1) { ascvdRisk = params[patientInfo.gender]["allOptimal"]; }
+        if (major > 1) { ascvdRisk = params[patientInfo.gender.major2]; }
+        if (major === 1) { ascvdRisk = params[patientInfo.gender.major1]; }
+        if (elevated === 1) { ascvdRisk = params[patientInfo.gender.elevated]; }
+        if (notOptimal === 1) { ascvdRisk = params[patientInfo.gender.notOptimal]; }
+        if (allOptimal === 1) { ascvdRisk = params[patientInfo.gender.allOptimal]; }
 
         if (useOptimal) { return patientInfo.gender === 'male' ? 5 : 8; }
         return ascvdRisk;
