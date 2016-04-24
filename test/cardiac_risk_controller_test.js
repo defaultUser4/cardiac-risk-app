@@ -409,12 +409,13 @@ describe ('CardiacRiskController', function() {
       document.body.appendChild(sbpInput);
 
       expect(sbpInput.value).to.be.equal('444');
+      expect(CardiacRisk.patientInfo.systolicBloodPressure).to.be.a('number');
 
       onSBPInput();
 
       var updatedSbpInput = document.getElementById('sbpInput');
       expect(updatedSbpInput.value).to.be.equal('119');
-
+      expect(CardiacRisk.patientInfo.systolicBloodPressure).to.be.a('number');
     });
 
     it('updates value for systolic blood pressure on the UI when SysBP is undefined', function(){
@@ -470,7 +471,7 @@ describe ('CardiacRiskController', function() {
       expect(sbpInput.value).to.be.equal('');
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects('isValidSysBP').once().withExactArgs('119').returns(true);
+      mock.expects('isValidSysBP').once().withExactArgs(119).returns(true);
       mock.expects('canCalculateCardiacRiskScore').once().returns(true);
 
       var mockWindow = sinonSandbox.mock(window);
