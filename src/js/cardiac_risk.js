@@ -68,6 +68,9 @@
                         /* Default to undefined since we want to remove error state on radio buttons on the first go */
                         relatedFactors.smoker = undefined;
                         relatedFactors.familyHeartAttackHistory = undefined;
+                        relatedFactors.race = 'white';
+                        relatedFactors.hypertension = true;
+                        relatedFactors.diabetic = true;
                         CardiacRisk.patientInfo.relatedFactors = relatedFactors;
 
                         var labsByLoincCodes = smart.byCodes(labResults, 'code');
@@ -298,6 +301,78 @@
         return Math.round(riskResult < 10 ? riskResult.toPrecision(1) : riskResult.toPrecision(2));
     };
     CardiacRisk.computeRRS = computeRRS;
+
+    /**
+    * Computes the ASCVD Risk for an individual over the next 10 years.
+    * @param patientInfo - patientInfo object from CardiacRisk data model.
+    */
+    var computeTenYearASCVD = function(patientInfo) {
+        var lnAge = Math.log(patientInfo.age);
+        var lnTotalChol = Math.log(patientInfo.totalCholesterol);
+        var lnHdl = Math.log(patientInfo.hdl);
+        var trlnsbp = patientInfo.hyptertension ? Math.log(patientInfo.systolicBloodPressure) : 0;
+        var ntlnsbp = patientInfo.hypertension ? 0 : Math.log(patientInfo.systolicBloodPressure);
+        var ageTotalChol = lnAge * lnTotalChol;
+        var ageHdl = lnAge * lnHdl;
+        var agetSbp = lnAge * trlnsbp;
+        var agentSbp = lnAge * ntlnsbp;
+        var ageSmoke = patientInfo.relatedFactors.smoker ? lnAge : 0;
+
+        var isAA = patientInfo.relatedFactors.race === 'aa';
+        var isMale = patientInfo.gender === 'male';
+        var s010Ret = 0;
+        var mnxbRet = 0;
+        var predictRet = 0;
+
+        var calculateScore = function() {
+            if (isAA && !isMale) {
+                s010Ret = 0.95334;
+                mnxbRet = 86.6081;
+                predictRet = 17.1141 * lnAge + 0.9396 * lnTotalChol + (-18.9196 * lnHdl) + 4.4748 * ageHdl + 29.2907 *
+                    trlnsbp + (-6.4321 * agetSbp) + 27.8197 * ntlnsbp + (-6.0873 * agentSbp) + 0.6908 *
+                    Number(patientInfo.relatedFactors.smoker) + 0.8738 * Number(patientInfo.relatedFactors.diabetic);
+            } else if (!isAA && !isMale) {
+                s010Ret = 0.96652;
+                mnxbRet = -29.1817;
+                predictRet = (-29.799 * lnAge) + 4.884 * Math.pow(lnAge, 2) + 13.54 * lnTotalChol + (-3.114 * ageTotalChol) +
+                    (-13.578 * lnHdl) + 3.149 * ageHdl + 2.019 * trlnsbp + 1.957 * ntlnsbp + 7.574 *
+                    Number(patientInfo.relatedFactors.smoker) + (-1.665 * ageSmoke) + 0.661 *
+                    Number(patientInfo.relatedFactors.diabetic);
+            } else if (isAA && isMale) {
+                s010Ret = 0.89536;
+                mnxbRet = 19.5425;
+                predictRet = 2.469 * lnAge + 0.302 * lnTotalChol + (-0.307 * lnHdl) + 1.916 * trlnsbp + 1.809 * ntlnsbp +
+                    0.549 * Number(patientInfo.relatedFactors.smoker) + 0.645 * Number(patientInfo.relatedFactors.diabetic);
+            } else {
+                s010Ret = 0.91436;
+                mnxbRet = 61.1816;
+                predictRet = 12.344 * lnAge + 11.853 * lnTotalChol + (-2.664 * ageTotalChol) + (-7.99 * lnHdl) + 1.769 *
+                    ageHdl + 1.797 * trlnsbp + 1.764 * ntlnsbp + 7.837 * Number(patientInfo.relatedFactors.smoker) +
+                    (-1.795 * ageSmoke) + 0.658 * Number(patientInfo.relatedFactors.diabetic);
+            }
+
+            return (1 - Math.pow(s010Ret, Math.exp(predictRet - mnxbRet)));
+        };
+        return calculateScore();
+    };
+    CardiacRisk.computeTenYearASCVD = computeTenYearASCVD;
+
+    /**
+    * Computes the ASCVD score for an individual under optimal conditions
+    * @returns {*}
+    */
+    var computeOptimalASCVD = function() {
+        var optimalPatient = $.extend(true, {}, CardiacRisk.patientInfo);
+        optimalPatient.totalCholesterol = 170;
+        optimalPatient.hdl = 50;
+        optimalPatient.systolicBloodPressure = 110;
+        optimalPatient.relatedFactors.hypertension = false;
+        optimalPatient.relatedFactors.diabetic = false;
+        optimalPatient.relatedFactors.smoker = false;
+
+        return CardiacRisk.computeTenYearASCVD(optimalPatient);
+    };
+    CardiacRisk.computeOptimalASCVD = computeOptimalASCVD;
 
     /**
      * Computes RRS for a patient with a potential systolic blood pressure of 10 mm/Hg lower than their current
