@@ -49,8 +49,7 @@
                                 'http://loinc.org|30522-7', 'http://loinc.org|14647-2',
                                 'http://loinc.org|2093-3', 'http://loinc.org|2085-9', 'http://loinc.org|8480-6'
                             ]
-                        },
-                        date: 'gt' + dateInPast.toJSON()
+                        }
                     }
                 });
                 $.when(patientQuery, labsQuery)
@@ -180,7 +179,7 @@
      */
     var getSystolicBloodPressureValue = function (sysBPObservations) {
         return CardiacRisk.getFirstValidDataPointValueFromObservations(sysBPObservations, function (dataPoint) {
-            if (dataPoint.valueQuantity.unit === 'mmHg') {
+            if (dataPoint.valueQuantity.unit === 'mmHg' || dataPoint.valueQuantity.unit === 'mm[Hg]') {
                 return parseFloat(dataPoint.valueQuantity.value);
             }
             else {
@@ -303,15 +302,15 @@
     CardiacRisk.computeRRS = computeRRS;
 
     /**
-    * Computes the ASCVD Risk for an individual over the next 10 years.
-    * @param patientInfo - patientInfo object from CardiacRisk data model.
+    * Computes the ASCVD Risk Estimate for an individual over the next 10 years.
+    * @param patientInfo - patientInfo object from CardiacRisk data model
     */
     var computeTenYearASCVD = function(patientInfo) {
         var lnAge = Math.log(patientInfo.age);
         var lnTotalChol = Math.log(patientInfo.totalCholesterol);
         var lnHdl = Math.log(patientInfo.hdl);
-        var trlnsbp = patientInfo.hyptertension ? Math.log(patientInfo.systolicBloodPressure) : 0;
-        var ntlnsbp = patientInfo.hypertension ? 0 : Math.log(patientInfo.systolicBloodPressure);
+        var trlnsbp = patientInfo.relatedFactors.hypertension ? Math.log(parseFloat(patientInfo.systolicBloodPressure)) : 0;
+        var ntlnsbp = patientInfo.relatedFactors.hypertension ? 0 : Math.log(parseFloat(patientInfo.systolicBloodPressure));
         var ageTotalChol = lnAge * lnTotalChol;
         var ageHdl = lnAge * lnHdl;
         var agetSbp = lnAge * trlnsbp;
@@ -358,8 +357,8 @@
     CardiacRisk.computeTenYearASCVD = computeTenYearASCVD;
 
     /**
-    * Computes the ASCVD score for an individual under optimal conditions
-    * @returns {*}
+    * Computes the ASCVD Risk Estimate for an individual under optimal conditions
+    * @returns {*} Returns the ASCVD risk estimate
     */
     var computeOptimalASCVD = function() {
         var optimalPatient = $.extend(true, {}, CardiacRisk.patientInfo);
@@ -373,6 +372,56 @@
         return CardiacRisk.computeTenYearASCVD(optimalPatient);
     };
     CardiacRisk.computeOptimalASCVD = computeOptimalASCVD;
+
+    /**
+    * Computes the lifetime ASCVD Risk Estimate for an individual. If the individual is younger than 20 or older than
+    * 59, the lifetime risk cannot be estimated. Returns the optimal risk for the individual's gender if specified.
+    * @param patientInfo - patientInfo object from CardiacRisk data model
+    * @param useOptimal - check to return the ASCVD risk estimate over an individual's lifetime under optimal conditions
+    * @returns {*} Returns the risk score or null if not in the appropriate age range
+    */
+    var computeLifetimeRisk = function(patientInfo, useOptimal) {
+        if (patientInfo.age < 20 || patientInfo.age > 59) { return null; }
+        var ascvdRisk = 0;
+        var params = {
+            "male": {
+                "major2": 69,
+                "major1": 50,
+                "elevated": 46,
+                "notOptimal": 36,
+                "allOptimal": 5
+            },
+            "female": {
+                "major2": 50,
+                "major1": 39,
+                "elevated": 39,
+                "notOptimal": 27,
+                "allOptimal": 8
+            }
+        };
+
+        var major = (patientInfo.totalCholesterol >= 240 ? 1 : 0) + ((patientInfo.systolicBloodPressure >= 160 ? 1 : 0) +
+            (patientInfo.hypertension ? 1 : 0)) + (patientInfo.relatedFactors.smoker ? 1 : 0) +
+            (patientInfo.relatedFactors.diabetes ? 1 : 0);
+        var elevated = ((((patientInfo.totalCholesterol >= 200 && patientInfo.totalCholesterol < 240) ? 1 : 0) +
+            ((patientInfo.systolicBloodPressure >= 140 && patientInfo.systolicBloodPressure < 160 &&
+            patientInfo.relatedFactors.hypertension == false) ? 1 : 0)) >= 1 ? 1 : 0) * (major == 0 ? 1 : 0);
+        var allOptimal = (((patientInfo.totalCholesterol < 180 ? 1 : 0) + ((patientInfo.systolicBloodPressure < 120 ? 1 : 0) *
+            (patientInfo.relatedFactors.hypertension ? 0 : 1))) == 2 ? 1 : 0) * (major == 0 ? 1 : 0);
+        var notOptimal = ((((patientInfo.totalCholesterol >= 180 && patientInfo.totalCholesterol < 200) ? 1 : 0) +
+            ((patientInfo.systolicBloodPressure >= 120 && patientInfo.systolicBloodPressure < 140 &&
+            patientInfo.relatedFactors.hypertension == false) ? 1 : 0)) * (elevated == 0 ? 1 : 0) * (major == 0 ? 1 : 0)) >= 1 ? 1 : 0;
+
+        if (major > 1) { ascvdRisk = params[patientInfo.gender]["major2"]; }
+        if (major === 1) { ascvdRisk = params[patientInfo.gender]["major1"]; }
+        if (elevated === 1) { ascvdRisk = params[patientInfo.gender]["elevated"]; }
+        if (notOptimal === 1) { ascvdRisk = params[patientInfo.gender]["notOptimal"]; }
+        if (allOptimal === 1) { ascvdRisk = params[patientInfo.gender]["allOptimal"]; }
+
+        if (useOptimal) { return patientInfo.gender === 'male' ? 5 : 8; }
+        return ascvdRisk;
+    };
+    CardiacRisk.computeLifetimeRisk = computeLifetimeRisk;
 
     /**
      * Computes RRS for a patient with a potential systolic blood pressure of 10 mm/Hg lower than their current
