@@ -81,7 +81,7 @@ describe ('CardiacRisk', function() {
       var labsToSort = [
         {
           "valueQuantity" : {
-            unit: 'mmHg',
+            code: 'mm[Hg]',
             value: 119
           },
           "status" : 'amended',
@@ -89,7 +89,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 0.38
           },
           "status" : 'final',
@@ -97,7 +97,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 10
           },
           "status" : 'entered-in-error',
@@ -105,7 +105,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mg/L',
+            code: 'mg/L',
             value: 38
           },
           "status" : 'final',
@@ -113,7 +113,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 0.38
           },
           "status" : 'final',
@@ -123,7 +123,7 @@ describe ('CardiacRisk', function() {
       var expectedResponse = [
         {
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 0.38
           },
           "status" : 'final',
@@ -131,7 +131,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mg/L',
+            code: 'mg/L',
             value: 38
           },
           "status" : 'final',
@@ -139,7 +139,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 10
           },
           "status" : 'entered-in-error',
@@ -147,7 +147,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mmHg',
+            code: 'mm[Hg]',
             value: 119
           },
           "status" : 'amended',
@@ -155,7 +155,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 0.38
           },
           "status" : 'final',
@@ -179,7 +179,7 @@ describe ('CardiacRisk', function() {
       it ('when the cholesterol is in mg/dL', function() {
         var cholesterol = [{
             "valueQuantity" : {
-              unit: 'mg/dL',
+              code: 'mg/dL',
               value: 238
             },
             "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -192,7 +192,7 @@ describe ('CardiacRisk', function() {
       it ('when the cholesterol is in mmol/L', function() {
         var cholesterol = [{
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 238
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -205,7 +205,7 @@ describe ('CardiacRisk', function() {
       it ('when the cholesterol is in mmol/L when getFirstValidDataPointValueFromObservations is mocked', function() {
         var cholesterol = [{
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 238
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -223,7 +223,7 @@ describe ('CardiacRisk', function() {
       it ('when the cholesterol has invalid units', function() {
         var cholesterol = [{
           "valueQuantity" : {
-            unit: 'mol/L',
+            code: 'mol/L',
             value: 238
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -256,7 +256,7 @@ describe ('CardiacRisk', function() {
       it ('when the given value has units in mg/L', function() {
         var hscrp = [{
           "valueQuantity" : {
-            unit: 'mg/L',
+            code: 'mg/L',
             value: 3.8
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -269,7 +269,7 @@ describe ('CardiacRisk', function() {
       it ('when the given value has units in mmol/L', function() {
         var hscrp = [{
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 0.38
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -282,7 +282,7 @@ describe ('CardiacRisk', function() {
       it ('when the hscrp is in mmol/L when getFirstValidDataPointValueFromObservations is mocked', function() {
         var hscrp = [{
           "valueQuantity" : {
-            unit: 'mmol/L',
+            code: 'mmol/L',
             value: 0.38
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -300,7 +300,7 @@ describe ('CardiacRisk', function() {
       it ('when the given value has invalid units', function() {
         var hscrp = [{
           "valueQuantity" : {
-            unit: 'mol/L',
+            code: 'mol/L',
             value: 0.38
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -333,11 +333,11 @@ describe ('CardiacRisk', function() {
 
   describe ('getSystolicBloodPressureValue', function() {
     describe('returns given valid SBP in float value', function() {
-      it('when SBP is a valid value in mmHg', function(){
+      it('when SBP is a valid value in mm[Hg]', function(){
         var sbp = [{
           "valueQuantity" : {
             value: 106,
-            unit: 'mmHg'
+            code: 'mm[Hg]'
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
           "status" : 'final'
@@ -345,11 +345,11 @@ describe ('CardiacRisk', function() {
         expect(CardiacRisk.getSystolicBloodPressureValue(sbp)).to.equal(106.00);
       });
 
-      it('when SBP is an invalid value in mmHg', function(){
+      it('when SBP is an invalid value in mm[Hg]', function(){
         var sbp = [{
           "valueQuantity" : {
             value: 106,
-            unit: 'mmsHg'
+            code: 'mmsHg'
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
           "status" : 'final'
@@ -358,11 +358,11 @@ describe ('CardiacRisk', function() {
         expect(CardiacRisk.getSystolicBloodPressureValue(sbp)).to.equal(undefined);
       });
 
-      it('when SBP is an invalid value in mmHg when getFirstValidDataPointValueFromObservations is mocked', function(){
+      it('when SBP is an invalid value in mm[Hg] when getFirstValidDataPointValueFromObservations is mocked', function(){
         var sbp = [{
           "valueQuantity" : {
             value: 106,
-            unit: 'mmHg'
+            code: 'mm[Hg]'
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
           "status" : 'final'
@@ -398,7 +398,7 @@ describe ('CardiacRisk', function() {
       CardiacRisk.hasObservationWithUnsupportedUnits = false;
       var observations = [{
         "valueQuantity" : {
-          unit: 'mg/dL',
+          code: 'mg/dL',
           value: 238
         },
         "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -409,7 +409,7 @@ describe ('CardiacRisk', function() {
       mockCardiacRisk.expects('sortObservationsByAppliesTimeStamp').once().withExactArgs(observations).returns(observations);
 
       var dataPointValue = CardiacRisk.getFirstValidDataPointValueFromObservations(observations,function (dataPoint) {
-        if (dataPoint.valueQuantity.unit === 'mg/dL') {
+        if (dataPoint.valueQuantity.code === 'mg/dL') {
           return parseFloat(dataPoint.valueQuantity.value);
         }
         else
@@ -429,7 +429,7 @@ describe ('CardiacRisk', function() {
       CardiacRisk.hasObservationWithUnsupportedUnits = false;
       var observations = [{
         "valueQuantity" : {
-          unit: 'msg/dL',
+          code: 'msg/dL',
           value: 238
         },
         "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -438,7 +438,7 @@ describe ('CardiacRisk', function() {
       },
       {
         "valueQuantity" : {
-          unit: 'mmHg',
+          code: 'mm[Hg]',
           value: 119
         },
         "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -447,7 +447,7 @@ describe ('CardiacRisk', function() {
       },
       {
         "valueQuantity" : {
-          unit: 'mfg/dL',
+          code: 'mfg/dL',
           value: 238
         },
         "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -459,7 +459,7 @@ describe ('CardiacRisk', function() {
       mockCardiacRisk.expects('sortObservationsByAppliesTimeStamp').once().withExactArgs(observations).returns(observations);
 
       var dataPointValue = CardiacRisk.getFirstValidDataPointValueFromObservations(observations,function (dataPoint) {
-        if (dataPoint.valueQuantity.unit === 'mmHg') {
+        if (dataPoint.valueQuantity.code === 'mm[Hg]') {
           return parseFloat(dataPoint.valueQuantity.value);
         }
         else
@@ -478,7 +478,7 @@ describe ('CardiacRisk', function() {
       CardiacRisk.hasObservationWithUnsupportedUnits = false;
       var observations = [{
         "valueQuantity" : {
-          unit: 'mg/dL',
+          code: 'mg/dL',
           value: 238
         },
         "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -487,7 +487,7 @@ describe ('CardiacRisk', function() {
       },
         {
           "valueQuantity" : {
-            unit: 'mmHg',
+            code: 'mm[Hg]',
             value: 119
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -496,7 +496,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mg/dL',
+            code: 'mg/dL',
             value: 238
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -508,7 +508,7 @@ describe ('CardiacRisk', function() {
       mockCardiacRisk.expects('sortObservationsByAppliesTimeStamp').once().withExactArgs(observations).returns(observations);
 
       var dataPointValue = CardiacRisk.getFirstValidDataPointValueFromObservations(observations,function (dataPoint) {
-        if (dataPoint.valueQuantity.unit === 'mmHg') {
+        if (dataPoint.valueQuantity.code === 'mm[Hg]') {
           return parseFloat(dataPoint.valueQuantity.value);
         }
         else
@@ -553,14 +553,14 @@ describe ('CardiacRisk', function() {
       CardiacRisk.hasObservationWithUnsupportedUnits = false;
       var observations = [{
         "valueQuantity" : {
-          unit: 'mg/dL'
+          code: 'mg/dL'
         },
         "appliesDateTime" : "2016-03-07T18:02:00.000Z",
         "status" : 'final'
       },
         {
           "valueQuantity" : {
-            unit: 'mmHg'
+            code: 'mm[Hg]'
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
           "status" : 'final'
@@ -568,7 +568,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mg/dL'
+            code: 'mg/dL'
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
           "status" : 'final'
@@ -628,7 +628,7 @@ describe ('CardiacRisk', function() {
       CardiacRisk.hasObservationWithUnsupportedUnits = false;
       var observations = [{
         "valueQuantity" : {
-          unit: 'mg/dL',
+          code: 'mg/dL',
           value: 238
         },
         "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -637,7 +637,7 @@ describe ('CardiacRisk', function() {
       },
         {
           "valueQuantity" : {
-            unit: 'mmdHg',
+            code: 'mmdHg',
             value: 119
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -646,7 +646,7 @@ describe ('CardiacRisk', function() {
         },
         {
           "valueQuantity" : {
-            unit: 'mfg/dL',
+            code: 'mfg/dL',
             value: 238
           },
           "appliesDateTime" : "2016-03-07T18:02:00.000Z",
@@ -659,10 +659,10 @@ describe ('CardiacRisk', function() {
 
       var dataPointValue = CardiacRisk.getFirstValidDataPointValueFromObservations(observations,function (dataPoint) {
         if (dataPoint !== undefined) {
-          if (dataPoint.valueQuantity.unit === 'mg/dL') {
+          if (dataPoint.valueQuantity.code === 'mg/dL') {
             return parseFloat(dataPoint.valueQuantity.value);
           }
-          else if (dataPoint.valueQuantity.unit === 'mmol/L') {
+          else if (dataPoint.valueQuantity.code === 'mmol/L') {
             return parseFloat(dataPoint.valueQuantity.value) / 0.026;
           }
           else {
