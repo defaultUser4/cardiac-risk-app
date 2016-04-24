@@ -139,10 +139,10 @@
      */
     var getCholesterolValue = function (cholesterolObservations) {
         return CardiacRisk.getFirstValidDataPointValueFromObservations(cholesterolObservations, function (dataPoint) {
-            if (dataPoint.valueQuantity.code === 'mg/dL') {
+            if (dataPoint.valueQuantity.unit === 'mg/dL') {
                 return parseFloat(dataPoint.valueQuantity.value);
             }
-            else if (dataPoint.valueQuantity.code === 'mmol/L') {
+            else if (dataPoint.valueQuantity.unit === 'mmol/L') {
                 return parseFloat(dataPoint.valueQuantity.value) / 0.026;
             }
             else {
@@ -159,10 +159,10 @@
      */
     var getHSCRPValue = function (hsCRPObservations) {
         return CardiacRisk.getFirstValidDataPointValueFromObservations(hsCRPObservations, function (dataPoint) {
-            if (dataPoint.valueQuantity.code === 'mg/L') {
+            if (dataPoint.valueQuantity.unit === 'mg/L') {
                 return parseFloat(dataPoint.valueQuantity.value);
             }
-            else if (dataPoint.valueQuantity.code === 'mmol/L') {
+            else if (dataPoint.valueQuantity.unit === 'mmol/L') {
                 return parseFloat(dataPoint.valueQuantity.value) / 0.10;
             }
             else {
@@ -179,7 +179,7 @@
      */
     var getSystolicBloodPressureValue = function (sysBPObservations) {
         return CardiacRisk.getFirstValidDataPointValueFromObservations(sysBPObservations, function (dataPoint) {
-            if (dataPoint.valueQuantity.code === 'mm[Hg]') {
+            if (dataPoint.valueQuantity.unit === 'mm[Hg]' || dataPoint.valueQuantity.unit === 'mmHg') {
                 return parseFloat(dataPoint.valueQuantity.value);
             }
             else {
@@ -207,7 +207,7 @@
 
             if ((dataPoints[i].status.toLowerCase() === 'final' || dataPoints[i].status.toLowerCase() === 'amended') &&
                 dataPoints[i].hasOwnProperty('valueQuantity') && dataPoints[i].valueQuantity.value &&
-                dataPoints[i].valueQuantity.code) {
+                dataPoints[i].valueQuantity.unit) {
 
                 var dataPointValue = supportedUnitsCriteria(dataPoints[i]);
                 if (dataPointValue !== undefined) {
