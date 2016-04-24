@@ -38,6 +38,13 @@
 						<div id="riskDescription" class="riskDescriptionLayout">
 							<span id="riskDescriptionText"></span><span id="riskDescriptionValue" class="boldStyle"></span>
 						</div>
+						<!-- New ASCVD Estimate Displays -->
+						<div id="ascvdResultDisplays">
+							<div id="tenYearASCVDEstimate"></div>
+							<div id="tenYearASCVDOptimalEstimate"></div>
+							<div id="lifetimeASCVDEstimate"></div>
+							<div id="lifetimeASCVDOptimalEstimate"></div>
+						</div>
 						<div id="whatIfContainer" class="whatIfContainerLayout">
 							<span class="zeroMargin"><b>Your risk would be lowered to:</b></span>
 							<div id='whatIfSBP' class="zeroMargin"><span id="whatIfSBPValue" class="boldStyle"></span> if your blood pressure was <span id="whatIfSBPValueText"></span></div>
@@ -80,6 +87,31 @@
 									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="familyHeartAttackHistory" value="no">No</label>
 								</p>
 								<span id="legendFamilyHistoryError" class="relatedFactorsErrors">This field is required.</span>
+							</fieldset>
+							<fieldset>
+								<legend class="relatedFactorsQuestions"><span id="asteriskHypertension" class="asterisk">*</span>Do you have hypertension?</legend>
+								<p>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="hyptertension" value="yes">Yes</label>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="hyptertension" value="no">No</label>
+								</p>
+								<span id="legendHypertensionError" class="relatedFactorsErrors">This field is required.</span>
+							</fieldset>
+							<fieldset>
+								<legend class="relatedFactorsQuestions"><span id="asteriskRace" class="asterisk">*</span>What race are you?</legend>
+								<p>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="race" value="white">White</label>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="race" value="aa">African American</label>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="race" value="other">Other</label>
+								</p>
+								<span id="legendRaceError" class="relatedFactorsErrors">This field is required.</span>
+							</fieldset>
+							<fieldset>
+								<legend class="relatedFactorsQuestions"><span id="asteriskDiabetic" class="asterisk">*</span>Are you a diabetic?</legend>
+								<p>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="diabetic" value="yes">Yes</label>
+									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="diabetic" value="no">No</label>
+								</p>
+								<span id="legendDiabeticError" class="relatedFactorsErrors">This field is required.</span>
 							</fieldset>
 							<fieldset>
 								<legend class="relatedFactorsQuestions"><span id="asteriskSBP" class="asterisk">*</span>Systolic Blood Pressure</legend>
@@ -128,7 +160,7 @@
 				</div>
 			</div>
 		</div><!-- main layout of app w/out header -->
-		<script src="../fhir-client-dstu2/fhir-client.min.js"></script>
+		<script src="node_modules/fhirclient/fhir-client.js"></script>
 		<script src='lib/jquery.min.js'></script>
 		<script src="lib/jquery.tooltipster.min.js"></script>
 		<script src='build/js/cardiac_risk.min.js'></script>

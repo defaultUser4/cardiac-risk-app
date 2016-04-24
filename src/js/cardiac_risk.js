@@ -646,6 +646,28 @@
     CardiacRisk.canCalculateCardiacRiskScore = canCalculateCardiacRiskScore;
 
     /**
+    * Checks if the ASCVD data model has sufficient data to compute ASCVD score.
+    * Checks for :
+    *    1. Systolic Blood Pressure
+    *   2. Patients Hypertension status
+    *   3. Patients race
+    *   4. Patients diabetic status
+    *   5. Patients smoker status
+    * @returns {boolean} Indicating if ASCVD Estimate can be calculated.
+    */
+    var canCalculateASCVDScore = function () {
+        if (CardiacRisk.isValidSysBP(CardiacRisk.patientInfo.systolicBloodPressure) &&
+            CardiacRisk.patientInfo.relatedFactors.hypertension !== undefined &&
+            CardiacRisk.patientInfo.relatedFactors.race !== undefined &&
+            CardiacRisk.patientInfo.relatedFactors.diabetic !== undefined &&
+            CardiacRisk.patientInfo.relatedFactors.smoker !== undefined) {
+            return true;
+        }
+        return false;
+    };
+    CardiacRisk.canCalculateASCVDScore = canCalculateASCVDScore;
+
+    /**
      * Checks if the Cardiac Risk data model has all the labs available. This is used to verify is the service returned
      * atleast 1 value per lab.
      * @returns {boolean} : Indicating if all labs are available.

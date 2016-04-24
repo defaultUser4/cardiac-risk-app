@@ -133,6 +133,7 @@
     updateUIWhatIfSystolicBloodPressure();
     updateUIWhatIfNotSmoker();
     updateUIWhatIfOptimalValues();
+    updateASCVDRiskEstimates();
 
     adjustRelatedFactorsSize();
   }
@@ -145,6 +146,9 @@
     $('#sbpInput').on('focusout', sbpInputFocusOutHandler);
     $('[name="smoker"]').change(onSmokerInput);
     $('[name="familyHeartAttackHistory"]').change(onFamilyHistoryInput);
+    $('[name="hypertension"]').change(onHypertensionInput);
+    $('[name="race"]').change(onRaceInput);
+    $('[name="diabetic"]').change(onDiabeticInput);
   }
 
   /**
@@ -208,6 +212,74 @@
   }
 
   /**
+   * Event listener method for the hypertension status radio button value change.
+   */
+  function onHypertensionInput() {
+    if (CardiacRisk.patientInfo.relatedFactors.hypertension === undefined) {
+      $('#legendHypertensionError').toggleClass('relatedFactorsErrors relatedFactorsErrorsHidden');
+      $('#asteriskHypertension').removeClass().addClass('contentHidden');
+    }
+
+    if ($(this).val() === 'yes') {
+      // Save the user viewed hypertension condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.hypertension = true;
+    } else {
+      // Save the user viewed hypertension condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.hypertension = false;
+    }
+
+    if (CardiacRisk.canCalculateASCVDScore()) {
+      updateUI();
+    }
+  }
+
+  /**
+   * Event listener method for the race status radio button value change.
+   */
+  function onRaceInput() {
+    if (CardiacRisk.patientInfo.relatedFactors.race === undefined) {
+      $('#legendRaceError').toggleClass('relatedFactorsErrors relatedFactorsErrorsHidden');
+      $('#asteriskRace').removeClass().addClass('contentHidden');
+    }
+
+    if ($(this).val() === 'white') {
+      // Save the user viewed race condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.race = 'white';
+    } else if ($(this).val() === 'aa') {
+      // Save the user viewed race condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.race = 'aa';
+    } else {
+      CardiacRisk.patientInfo.relatedFactors.race = 'other';
+    }
+
+    if (CardiacRisk.canCalculateASCVDScore()) {
+      updateUI();
+    }
+  }
+
+  /**
+   * Event listener method for the diabetic status radio button value change.
+   */
+  function onDiabeticInput() {
+    if (CardiacRisk.patientInfo.relatedFactors.diabetic === undefined) {
+      $('#legendDiabeticError').toggleClass('relatedFactorsErrors relatedFactorsErrorsHidden');
+      $('#asteriskDiabetic').removeClass().addClass('contentHidden');
+    }
+
+    if ($(this).val() === 'yes') {
+      // Save the user viewed diabetic condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.diabetic = true;
+    } else {
+      // Save the user viewed diabetic condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.diabetic = false;
+    }
+
+    if (CardiacRisk.canCalculateASCVDScore()) {
+      updateUI();
+    }
+  }
+
+  /**
    * Event listener method for the family heart attach history status radio button value change.
    */
   function onFamilyHistoryInput() {
@@ -236,10 +308,6 @@
   function updateUICardiacRiskScore() {
     var score = CardiacRisk.computeRRS(CardiacRisk.patientInfo);
 
-    $('#riskDescriptionText').text('Your chance of having a heart attack, stroke, or other ' +
-    'heart disease event at some point in the next 10 years is ');
-    $('#riskDescriptionValue').text(score + '%');
-
     var $riskBar = $('#riskBar');
     var $riskMessage = $('#riskMessage');
     if (score < 5) {
@@ -254,6 +322,35 @@
     } else if (score >= 20) {
       $riskBar.removeClass().addClass('riskBarHighRisk');
       $riskMessage.text('High Risk');
+    }
+  }
+
+  function updateASCVDRiskEstimates() {
+    var tenYearASCVDScore = CardiacRisk.computeTenYearASCVD(CardiacRisk.patientInfo);
+    var tenYearASCVDOptimalScore = CardiacRisk.computeOptimalASCVD();
+    var lifetimeASCVDScore = CardiacRisk.computeLifetimeRisk(CardiacRisk.patientInfo, false);
+    var lifetimeASCVDOptimalScore = CardiacRisk.computeLifetimeRisk(CardiacRisk.patientInfo, true);
+
+    if (tenYearASCVDScore === null || tenYearASCVDOptimalScore === null) {
+      $('#tenYearASCVDEstimate').text('ASCVD 10-year Risk Estimate can only be computed for those in the age' +
+          ' range of 40-79');
+      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year Risk Estimate can only be computed for those in the age' +
+          ' range of 40-79');
+    } else {
+      $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + Math.round((tenYearASCVDScore * 100) * 10) / 10 + '%');
+      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' +
+          Math.round((tenYearASCVDOptimalScore * 100) * 10) / 10 + '%');
+    }
+
+    if (lifetimeASCVDScore === null || lifetimeASCVDOptimalScore === null) {
+      $('#lifetimeASCVDEstimate').text('Lifetime ASCVD Risk Estimate can only be computed for those in the ' +
+          'age range of 20-59');
+      $('#lifetimeASCVDEstimate').text('Lifetime ASCVD Risk Estimate can only be computed for those in the ' +
+          'age range of 20-59');
+    } else {
+      $('#lifetimeASCVDEstimate').text('Lifetime ASCVD Risk Estimate: ' + lifetimeASCVDScore + '%');
+      $('#lifetimeASCVDOptimalEstimate').text('Lifetime ASCVD Risk Estimate (optimal conditions): ' +
+          lifetimeASCVDOptimalScore + '%');
     }
   }
 
