@@ -308,6 +308,10 @@
   function updateUICardiacRiskScore() {
     var score = CardiacRisk.computeRRS(CardiacRisk.patientInfo);
 
+    $('#riskDescriptionText').text('Your chance of having a heart attack, stroke, or other ' +
+    'heart disease event at some point in the next 10 years is ');
+    $('#riskDescriptionValue').text(score + '%');
+
     var $riskBar = $('#riskBar');
     var $riskMessage = $('#riskMessage');
     if (score < 5) {
