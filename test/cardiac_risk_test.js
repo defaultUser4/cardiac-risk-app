@@ -28,7 +28,6 @@ describe ('CardiacRisk', function() {
       var loincCodes = function (loincCode) {};
 
       var mockCardiacRisk = sinonSandbox.mock(CardiacRisk);
-      mockCardiacRisk.expects('getHSCRPValue').once().withExactArgs(loincCodes('30522-7')).returns(2.5);
       mockCardiacRisk.expects('getCholesterolValue').once().withExactArgs(loincCodes('14647-2', '2093-3')).returns(240);
       mockCardiacRisk.expects('getCholesterolValue').once().withExactArgs(loincCodes('2085-9')).returns(45);
       mockCardiacRisk.expects('getCholesterolValue').once().withExactArgs(loincCodes('2089-1')).returns(161);
@@ -39,7 +38,6 @@ describe ('CardiacRisk', function() {
       CardiacRisk.processLabsData(loincCodes);
 
       expect(CardiacRisk.hasObservationWithUnsupportedUnits).to.equal(false);
-      expect(CardiacRisk.patientInfo.hsCReactiveProtein).to.equal(2.5);
       expect(CardiacRisk.patientInfo.totalCholesterol).to.equal(240);
       expect(CardiacRisk.patientInfo.hdl).to.equal(45);
       expect(CardiacRisk.patientInfo.ldl).to.equal(161);
@@ -54,7 +52,6 @@ describe ('CardiacRisk', function() {
       var loincCodes = function (loincCode) {};
 
       var mockCardiacRisk = sinonSandbox.mock(CardiacRisk);
-      mockCardiacRisk.expects('getHSCRPValue').once().withExactArgs(loincCodes('30522-7')).returns(2.5);
       mockCardiacRisk.expects('getCholesterolValue').once().withExactArgs(loincCodes('14647-2', '2093-3')).returns(240);
       mockCardiacRisk.expects('getCholesterolValue').once().withExactArgs(loincCodes('2085-9')).returns(45);
       mockCardiacRisk.expects('getCholesterolValue').once().withExactArgs(loincCodes('2089-1')).returns(undefined);
@@ -65,7 +62,6 @@ describe ('CardiacRisk', function() {
       CardiacRisk.processLabsData(loincCodes);
 
       expect(CardiacRisk.hasObservationWithUnsupportedUnits).to.equal(false);
-      expect(CardiacRisk.patientInfo.hsCReactiveProtein).to.equal(2.5);
       expect(CardiacRisk.patientInfo.totalCholesterol).to.equal(240);
       expect(CardiacRisk.patientInfo.hdl).to.equal(45);
       expect(CardiacRisk.patientInfo.ldl).to.equal(162);
@@ -247,86 +243,6 @@ describe ('CardiacRisk', function() {
       it ('when the cholesterol input is an empty array', function() {
         var cholesterol = [];
         expect(CardiacRisk.getCholesterolValue(cholesterol)).to.equal(undefined);
-      });
-    });
-  });
-
-  describe ('getHSCRPValue', function() {
-    describe ('returns given valid high sensitivity C-reactive protien input as per units', function() {
-      it ('when the given value has units in mg/L', function() {
-        var hscrp = [{
-          "valueQuantity" : {
-            unit: 'mg/L',
-            value: 3.8
-          },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
-          "status" : 'final'
-        }];
-
-        expect(CardiacRisk.getHSCRPValue(hscrp)).to.equal(3.8);
-      });
-
-      it ('when the given value has units in mmol/L', function() {
-        var hscrp = [{
-          "valueQuantity" : {
-            unit: 'mmol/L',
-            value: 0.38
-          },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
-          "status" : 'final'
-        }];
-
-        expect(CardiacRisk.getHSCRPValue(hscrp)).to.equal(3.8);
-      });
-
-      it ('when the hscrp is in mmol/L when getFirstValidDataPointValueFromObservations is mocked', function() {
-        var hscrp = [{
-          "valueQuantity" : {
-            unit: 'mmol/L',
-            value: 0.38
-          },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
-          "status" : 'final'
-        }];
-
-        var mock = sinonSandbox.mock(CardiacRisk);
-        mock.expects('getFirstValidDataPointValueFromObservations').once().withArgs(hscrp).returns(parseFloat(hscrp[0].valueQuantity.value)/0.10);
-        var response = CardiacRisk.getHSCRPValue(hscrp);
-        expect(response).to.equal(parseFloat(0.38) / 0.10);
-        mock.verify();
-      });
-    });
-    describe ('returns response as undefined for given invalid hsCRP input', function() {
-      it ('when the given value has invalid units', function() {
-        var hscrp = [{
-          "valueQuantity" : {
-            unit: 'mol/L',
-            value: 0.38
-          },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
-          "status" : 'final'
-        }];
-
-        var response = CardiacRisk.getHSCRPValue(hscrp);
-        expect(response).to.equal(undefined);
-      });
-
-      it ('when the given value is missing units field', function() {
-        var hscrp = [{
-          "valueQuantity" : {
-            value: 0.38
-          },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
-          "status" : 'final'
-        }];
-
-        expect(CardiacRisk.getHSCRPValue(hscrp)).to.equal(undefined);
-      });
-
-      it ('when the given value is an empty array', function() {
-        var hscrp = [];
-
-        expect(CardiacRisk.getHSCRPValue(hscrp)).to.equal(undefined);
       });
     });
   });
@@ -680,34 +596,34 @@ describe ('CardiacRisk', function() {
   describe ('computeRRS', function() {
     describe ('for men', function() {
       it ('with the score in bounds', function () {
-        var malePatient = setPatientInfo('male',79,3.5,220,165,55,122,false,false);
+        var malePatient = setPatientInfo('male',79,220,165,55,122,false,false);
         assert.equal(21, CardiacRisk.computeRRS(malePatient));
       });
 
       it ('with the score at the boundary of 100', function() {
-        var malePatientBoundary = setPatientInfo('male',55,9,350,250,60,122,true,true);
+        var malePatientBoundary = setPatientInfo('male',55,350,250,60,122,true,true);
         assert.equal(18, CardiacRisk.computeRRS(malePatientBoundary));
       });
 
       it ('calculates score when ldl is missing', function() {
-        var malePatient = setPatientInfo('male',79,3.5,220,'undefined',55,122,false,false);
+        var malePatient = setPatientInfo('male',79,220,'undefined',55,122,false,false);
         assert.equal(21, CardiacRisk.computeRRS(malePatient));
       });
     });
 
     describe ('for women', function() {
       it ('with the score in bounds', function () {
-        var malePatient = setPatientInfo('female',79,3.5,220,165,55,122,false,false);
+        var malePatient = setPatientInfo('female',79,220,165,55,122,false,false);
         assert.equal(10, CardiacRisk.computeRRS(malePatient));
       });
 
       it ('with the score at the boundary of 100', function() {
-        var malePatientBoundary = setPatientInfo('female',55,9,350,250,60,122,true,true);
+        var malePatientBoundary = setPatientInfo('female',55,350,250,60,122,true,true);
         assert.equal(11, CardiacRisk.computeRRS(malePatientBoundary));
       });
 
       it ('calculates score when ldl is missing', function() {
-        var malePatient = setPatientInfo('female',79,3.5,220,'undefined',55,122,false,false);
+        var malePatient = setPatientInfo('female',79,220,'undefined',55,122,false,false);
         assert.equal(10, CardiacRisk.computeRRS(malePatient));
       });
     });
@@ -715,7 +631,7 @@ describe ('CardiacRisk', function() {
 
   describe ('computeWhatIfSBP', function() {
     it('it returns valid display text and value if systolic blood pressure is > 129', function(){
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.systolicBloodPressure = 130;
 
       var expectedResponse = {};
@@ -734,7 +650,7 @@ describe ('CardiacRisk', function() {
     });
 
     it('it returns valid display text and value if systolic blood pressure is = 120', function(){
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.systolicBloodPressure = 120;
 
       var expectedResponse = {};
@@ -753,7 +669,7 @@ describe ('CardiacRisk', function() {
     });
 
     it('it returns undefined if systolic blood pressure is = 105', function(){
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.systolicBloodPressure = 105;
 
       var functionResponse = CardiacRisk.computeWhatIfSBP();
@@ -762,7 +678,7 @@ describe ('CardiacRisk', function() {
     });
 
     it('it returns undefined if systolic blood pressure is = 119', function(){
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.systolicBloodPressure = 119;
 
       var functionResponse = CardiacRisk.computeWhatIfSBP();
@@ -773,7 +689,7 @@ describe ('CardiacRisk', function() {
 
   describe ('computeWhatIfNotSmoker', function() {
     it('it returns valid score for if the patient is not a smoker', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.relatedFactors.smoker = true;
 
       var patientInfoCopy = $.extend(true, {}, CardiacRisk.patientInfo);
@@ -792,7 +708,7 @@ describe ('CardiacRisk', function() {
 
   describe ('computeWhatIfOptimal', function() {
     it('it returns valid score for all optimal values', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
       mock.expects('computeRRS').once().withExactArgs(CardiacRisk.patientInfo).returns(6);
@@ -809,11 +725,10 @@ describe ('CardiacRisk', function() {
 
     it('it returns dietHeader, diet, doctorHeader, doctor ' +
     ' display for cholesterol = 160 and ldl = 99 and hdl = 60 and CRP = 0.4', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = 160;
       CardiacRisk.patientInfo.ldl = 99;
       CardiacRisk.patientInfo.hdl = 60;
-      CardiacRisk.patientInfo.hsCReactiveProtein = 0.4;
 
       var functionResponse = CardiacRisk.computePatientActions();
       expect(functionResponse.dietHeader).to.be.equal('Continue to eat a healthy diet and exercise');
@@ -827,11 +742,10 @@ describe ('CardiacRisk', function() {
 
     it('it returns dietHeader, diet, doctorHeader, doctor and ' +
     'retesting display for cholesterol = 160 ldl = 130 and hdl = 60', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = 160;
       CardiacRisk.patientInfo.ldl = 130;
       CardiacRisk.patientInfo.hdl = 60;
-      CardiacRisk.patientInfo.hsCReactiveProtein = 0.5;
 
       var functionResponse = CardiacRisk.computePatientActions();
       expect(functionResponse.dietHeader).to.be.equal('Improve your diet and exercise more');
@@ -846,11 +760,10 @@ describe ('CardiacRisk', function() {
 
     it('it returns dietHeader, diet, doctorHeader, doctor ' +
     ' display for cholesterol = 160 ldl = 130 and hdl = 60', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = 160;
       CardiacRisk.patientInfo.ldl = 130;
       CardiacRisk.patientInfo.hdl = 60;
-      CardiacRisk.patientInfo.hsCReactiveProtein = 0.4;
 
       var functionResponse = CardiacRisk.computePatientActions();
       expect(functionResponse.dietHeader).to.be.equal('Improve your diet and exercise more');
@@ -864,50 +777,29 @@ describe ('CardiacRisk', function() {
   });
 
   describe ('validateLabsForMissingValueErrors', function(){
-    it('returns errorText when hsCRP is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.hsCReactiveProtein = undefined;
-      var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
-      expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for High sensitivity C-Reactive Protein.');
-    });
-
-    it('returns errorText when hsCRP is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.hsCReactiveProtein = '';
-      var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
-      expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for High sensitivity C-Reactive Protein.');
-    });
-
-    it('returns errorText when hsCRP is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.hsCReactiveProtein = 'asdf';
-      var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
-      expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for High sensitivity C-Reactive Protein.');
-    });
-
     it('returns errorText when totalcholesterol is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = undefined;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
       expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for Total Cholesterol.');
     });
 
     it('returns errorText when totalcholesterol is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = '';
       var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
       expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for Total Cholesterol.');
     });
 
     it('returns errorText when totalcholesterol is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = 'asdf';
       var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
       expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for Total Cholesterol.');
     });
 
     it('returns errorText when hdl is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.hdl = undefined;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
       expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for HDL.');
@@ -921,7 +813,7 @@ describe ('CardiacRisk', function() {
     });
 
     it('returns errorText when hdl is undefined', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.hdl = 'asdf';
       var functionResponse = CardiacRisk.patientInfo.validateLabsForMissingValueErrors();
       expect(functionResponse).to.be.equal('Cardiac Risk cannot be calculated without a valid value for HDL.');
@@ -929,43 +821,29 @@ describe ('CardiacRisk', function() {
   });
 
   describe ('validateLabsForOutOfBoundsValueErrors', function(){
-    it('returns errorText when hsCRP is < 0.03', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.hsCReactiveProtein = 0.02;
-      var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
-      expect(functionResponse).to.be.equal('C-Reactive Protein levels are too low to return a cardiac risk score.');
-    });
-
-    it('returns errorText when hsCRP is > 20', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.hsCReactiveProtein = 21;
-      var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
-      expect(functionResponse).to.be.equal('C-Reactive Protein levels are too high to return a cardiac risk score.');
-    });
-
     it('returns errorText when totalCholesterol is < 140', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = 139;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
       expect(functionResponse).to.be.equal('Total Cholesterol levels are too low to return a cardiac risk score.');
     });
 
     it('returns errorText when totalcholesterol is > 401', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = 402;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
       expect(functionResponse).to.be.equal('Total Cholesterol levels are too high to return a cardiac risk score.');
     });
 
     it('returns errorText when hdl is < 30', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.hdl = 29;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
       expect(functionResponse).to.be.equal('HDL levels are too low to return a cardiac risk score.');
     });
 
     it('returns errorText when hdl is > 150', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.hdl = 151;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
       expect(functionResponse).to.be.equal('HDL levels are too high to return a cardiac risk score.');
@@ -974,7 +852,7 @@ describe ('CardiacRisk', function() {
 
   describe ('buildWhatIfOptimalValues', function() {
     it('returns a display text and value when the patient is a smoker and labs are not optimal', function() {
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.relatedFactors.smoker = true;
 
       var rrScore = 39;
@@ -993,9 +871,8 @@ describe ('CardiacRisk', function() {
 
     it('returns a display text and no value when the patient is not a smoker, ' +
     'has optimal labs, family history is true and score is > 5', function() {
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.relatedFactors.smoker = false;
-      CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory = true;
 
       var rrScore = 39;
       var response = {};
@@ -1012,7 +889,7 @@ describe ('CardiacRisk', function() {
     });
 
     it('returns a display text and no value when the patient is not a smoker, has optimal labs', function() {
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.relatedFactors.smoker = false;
 
       var rrScore = 3;
@@ -1030,9 +907,8 @@ describe ('CardiacRisk', function() {
     });
 
     it('returns a display text and value when the patient is not a smoker, labs are not optimal', function() {
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.relatedFactors.smoker = false;
-      CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory = true;
 
       var rrScore = 39;
       var response = {};
@@ -1051,7 +927,7 @@ describe ('CardiacRisk', function() {
 
   describe ('buildWhatIfNotSmoker', function() {
     it('returns a value', function() {
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
 
       var rrScore = 39;
       var response = {};
@@ -1066,7 +942,7 @@ describe ('CardiacRisk', function() {
   describe ('canCalculateCardiacRiskScore', function() {
     it ('returns true if the 3 values are available', function(){
 
-      setPatientInfo('male',59,0.5,160,100,60,undefined,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,undefined,false,false,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
       mock.expects("isValidSysBP").once().returns(true);
@@ -1078,7 +954,7 @@ describe ('CardiacRisk', function() {
     });
 
     it ('returns false if we have bad systolic blood pressure', function(){
-      setPatientInfo('male',59,0.5,160,100,60,undefined,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,undefined,false,false,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
       mock.expects("isValidSysBP").once().returns(false);
@@ -1090,7 +966,7 @@ describe ('CardiacRisk', function() {
     });
 
     it ('returns false if we have undefined smoker status', function(){
-      setPatientInfo('male',59,0.5,160,100,60,undefined,undefined,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,undefined,undefined,false,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
       mock.expects("isValidSysBP").once().returns(true);
@@ -1102,7 +978,7 @@ describe ('CardiacRisk', function() {
     });
 
     it ('returns false if we have undefined family history status', function(){
-      setPatientInfo('male',59,0.5,160,100,60,undefined,true,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,undefined,true,undefined,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
       mock.expects("isValidSysBP").once().returns(true);
@@ -1115,64 +991,52 @@ describe ('CardiacRisk', function() {
   });
 
   describe ('isLabsNotAvailable', function() {
-    it ('returns true when one of the hsCRP is undefined', function() {
-      setPatientInfo('male',65,undefined,232,452,44,110,false,false,CardiacRisk.patientInfo);
-      var returnedValue = CardiacRisk.isLabsNotAvailable();
-      expect(returnedValue).to.equal(true);
-    });
-
     it ('returns true when one of the totalCholesterol is undefined', function() {
-      setPatientInfo('male',65,2.5,undefined,452,44,110,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,undefined,452,44,110,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isLabsNotAvailable();
       expect(returnedValue).to.equal(true);
     });
 
     it ('returns true when one of the hdl is undefined', function() {
-      setPatientInfo('male',65,2.5,345,452,undefined,110,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,345,452,undefined,110,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isLabsNotAvailable();
       expect(returnedValue).to.equal(true);
     });
 
     it ('returns true when one of the ldl is undefined', function() {
-      setPatientInfo('male',65,2.5,234,undefined,44,110,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,234,undefined,44,110,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isLabsNotAvailable();
       expect(returnedValue).to.equal(true);
     });
 
     it ('returns true when one of the systolic blood pressure is undefined', function() {
-      setPatientInfo('male',65,2.5,234,452,44,undefined,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,234,452,44,undefined,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isLabsNotAvailable();
       expect(returnedValue).to.equal(true);
     });
 
     it ('returns false when none of the labs are undefined', function() {
-      setPatientInfo('male',65,2.5,234,452,44,110,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,234,452,44,110,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isLabsNotAvailable();
       expect(returnedValue).to.equal(false);
     });
   });
 
   describe ('isRequiredLabsNotAvailable', function() {
-    it ('returns true when one of the hsCRP is undefined', function() {
-      setPatientInfo('male',65,undefined,232,452,44,110,false,false,CardiacRisk.patientInfo);
-      var returnedValue = CardiacRisk.isRequiredLabsNotAvailable();
-      expect(returnedValue).to.equal(true);
-    });
-
     it ('returns true when one of the totalCholesterol is undefined', function() {
-      setPatientInfo('male',65,2.5,undefined,452,44,110,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,undefined,452,44,110,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isRequiredLabsNotAvailable();
       expect(returnedValue).to.equal(true);
     });
 
     it ('returns true when one of the hdl is undefined', function() {
-      setPatientInfo('male',65,2.5,345,452,undefined,110,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,345,452,undefined,110,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isRequiredLabsNotAvailable();
       expect(returnedValue).to.equal(true);
     });
 
     it ('returns false when none of the labs are undefined', function() {
-      setPatientInfo('male',65,2.5,234,452,44,110,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',65,234,452,44,110,false,false,CardiacRisk.patientInfo);
       var returnedValue = CardiacRisk.isRequiredLabsNotAvailable();
       expect(returnedValue).to.equal(false);
     });
@@ -1216,35 +1080,24 @@ describe ('CardiacRisk', function() {
   });
 
   describe ('optimalLabs', function() {
-    it('it returns true if the lab values are optimal with HSCRP >= 0.03', function() {
-      setPatientInfo('male',59,0.03,160,100,60,119,false,false,CardiacRisk.patientInfo);
-      var functionResponse = CardiacRisk.optimalLabs();
-      expect(functionResponse).to.be.equal(true);
-    });
-    it('it returns true if the lab values are optimal with HSCRP <= 0.9', function() {
-      setPatientInfo('male',59,0.9,160,100,60,119,false,false,CardiacRisk.patientInfo);
-      var functionResponse = CardiacRisk.optimalLabs();
-      expect(functionResponse).to.be.equal(true);
-    });
-
     it('it returns true if the lab values are optimal with totalCholesterol >= 140', function() {
-      setPatientInfo('male',59,0.03,140,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,140,100,60,119,false,false,CardiacRisk.patientInfo);
       var functionResponse = CardiacRisk.optimalLabs();
       expect(functionResponse).to.be.equal(true);
     });
     it('it returns true if the lab values are optimal with totalCholesterol <= 199', function() {
-      setPatientInfo('male',59,0.9,199,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,199,100,60,119,false,false,CardiacRisk.patientInfo);
       var functionResponse = CardiacRisk.optimalLabs();
       expect(functionResponse).to.be.equal(true);
     });
 
     it('it returns true if the lab values are optimal with hdl >= 60', function() {
-      setPatientInfo('male',59,0.03,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
       var functionResponse = CardiacRisk.optimalLabs();
       expect(functionResponse).to.be.equal(true);
     });
     it('it returns true if the lab values are optimal with hdl <= 150', function() {
-      setPatientInfo('male',59,0.9,160,100,150,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,150,119,false,false,CardiacRisk.patientInfo);
       var functionResponse = CardiacRisk.optimalLabs();
       expect(functionResponse).to.be.equal(true);
     });
@@ -1255,13 +1108,13 @@ describe ('CardiacRisk', function() {
       expect(functionResponse).to.be.equal(true);
     });
     it('it returns true if the lab values are optimal with ldl <= 100', function() {
-      setPatientInfo('male',59,0.9,160,100,150,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,150,119,false,false,CardiacRisk.patientInfo);
       var functionResponse = CardiacRisk.optimalLabs();
       expect(functionResponse).to.be.equal(true);
     });
 
     it('it returns false if the lab values are optimal', function() {
-      setPatientInfo('male',59,3.5,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
       var functionResponse = CardiacRisk.optimalLabs();
       expect(functionResponse).to.be.equal(false);
     });
@@ -1269,21 +1122,21 @@ describe ('CardiacRisk', function() {
 
   describe ('validateModelForErrors', function(){
     it('returns errorText for incorrect age <45', function(){
-      setPatientInfo('male',40,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',40,160,100,60,119,false,false,CardiacRisk.patientInfo);
 
       var functionResponse = CardiacRisk.validateModelForErrors();
       expect(functionResponse).to.be.equal('Cardiac risk can only be calculated for patients aged 45-80 years old.');
     });
 
     it('returns errorText for incorrect age >80', function(){
-      setPatientInfo('male',85,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',85,160,100,60,119,false,false,CardiacRisk.patientInfo);
 
       var functionResponse = CardiacRisk.validateModelForErrors();
       expect(functionResponse).to.be.equal('Cardiac risk can only be calculated for patients aged 45-80 years old.');
     });
 
     it('returns errorText for invalid gender', function(){
-      setPatientInfo('malee',59,0.5,160,100,60,119,false,false, CardiacRisk.patientInfo);
+      setPatientInfo('malee',59,160,100,60,119,false,false, CardiacRisk.patientInfo);
 
       var functionResponse = CardiacRisk.validateModelForErrors();
       expect(functionResponse).to.be.equal('Cardiac Risk Score cannot be calculated for indeterminate gender.');
@@ -1291,14 +1144,14 @@ describe ('CardiacRisk', function() {
 
     it('returns errorText for gender with Capital Letters', function(){
 
-      setPatientInfo('MALE',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('MALE',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
 
       var functionResponse = CardiacRisk.validateModelForErrors();
       expect(functionResponse).to.be.equal('');
     });
 
     it('returns errorText for missing lab values', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk.patientInfo);
       mock.expects('validateLabsForMissingValueErrors').once().returns('DummyLabErrorText');
@@ -1309,7 +1162,7 @@ describe ('CardiacRisk', function() {
     });
 
     it('returns errorText for out of bound values', function(){
-      setPatientInfo('male',59,0.5,160,100,60,119,false,false,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk.patientInfo);
       mock.expects('validateLabsForMissingValueErrors').once().returns('');

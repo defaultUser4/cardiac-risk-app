@@ -6,19 +6,6 @@ describe('StaticRangeSlider', function() {
 
 			expect(CardiacRisk.graphData).to.be.an('object');
 
-			expect(CardiacRisk.graphData.crpSliderData).to.be.an('object');
-			expect(CardiacRisk.graphData.crpSliderData.id).to.be.equal('cReactiveProteinSlider');
-			expect(CardiacRisk.graphData.crpSliderData.titleLeft).to.be.equal('C Reactive Protein');
-			expect(CardiacRisk.graphData.crpSliderData.titleRight).to.be.equal('mg/L');
-			expect(CardiacRisk.graphData.crpSliderData.lowerBound).to.be.equal(0.03);
-			expect(CardiacRisk.graphData.crpSliderData.upperBound).to.be.equal(20);
-			expect(CardiacRisk.graphData.crpSliderData.barBoundsLowDisplay).to.be.equal('Low');
-			expect(CardiacRisk.graphData.crpSliderData.barBoundsHighDisplay).to.be.equal('High');
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData).to.be.an('object');
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData.keys).to.eql(['Low', 'Moderate', 'High']);
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData.values).to.eql(['0.03 - 0.9', '1 - 2.9', '3 - 20']);
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData.styleClass).to.equal('tooltipsterCardiacRiskCRP');
-
 			expect(CardiacRisk.graphData.totalCholesterolSliderData).to.be.an('object');
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.id).to.be.equal('totalCholesterolSlider');
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.titleLeft).to.be.equal('Total Cholesterol');
@@ -66,19 +53,6 @@ describe('StaticRangeSlider', function() {
 			buildRangeSliderDataModel();
 
 			expect(CardiacRisk.graphData).to.be.an('object');
-
-			expect(CardiacRisk.graphData.crpSliderData).to.be.an('object');
-			expect(CardiacRisk.graphData.crpSliderData.id).to.be.equal('cReactiveProteinSlider');
-			expect(CardiacRisk.graphData.crpSliderData.titleLeft).to.be.equal('C Reactive Protein');
-			expect(CardiacRisk.graphData.crpSliderData.titleRight).to.be.equal('mg/L');
-			expect(CardiacRisk.graphData.crpSliderData.lowerBound).to.be.equal(0.03);
-			expect(CardiacRisk.graphData.crpSliderData.upperBound).to.be.equal(20);
-			expect(CardiacRisk.graphData.crpSliderData.barBoundsLowDisplay).to.be.equal('Low');
-			expect(CardiacRisk.graphData.crpSliderData.barBoundsHighDisplay).to.be.equal('High');
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData).to.be.an('object');
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData.keys).to.eql(['Low', 'Moderate', 'High']);
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData.values).to.eql(['0.03 - 0.9', '1 - 2.9', '3 - 20']);
-			expect(CardiacRisk.graphData.crpSliderData.toolTipData.styleClass).to.equal('tooltipsterCardiacRiskCRP');
 
 			expect(CardiacRisk.graphData.totalCholesterolSliderData).to.be.an('object');
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.id).to.be.equal('totalCholesterolSlider');

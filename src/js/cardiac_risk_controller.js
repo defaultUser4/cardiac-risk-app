@@ -145,7 +145,6 @@
     $('#sbpInput').keypress(function(event) {return isNumberKey(event);});
     $('#sbpInput').on('focusout', sbpInputFocusOutHandler);
     $('[name="smoker"]').change(onSmokerInput);
-    $('[name="familyHeartAttackHistory"]').change(onFamilyHistoryInput);
     $('[name="hypertension"]').change(onHypertensionInput);
     $('[name="race"]').change(onRaceInput);
     $('[name="diabetic"]').change(onDiabeticInput);
@@ -280,26 +279,6 @@
   }
 
   /**
-   * Event listener method for the family heart attach history status radio button value change.
-   */
-  function onFamilyHistoryInput() {
-    if (CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory === undefined) {
-      $('#legendFamilyHistoryError').toggleClass('relatedFactorsErrors relatedFactorsErrorsHidden');
-      $('#asteriskFamilyHistory').removeClass().addClass('contentHidden');
-    }
-
-    if ($(this).val() === 'yes') {
-      CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory = true;
-    } else {
-      CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory = false;
-    }
-
-    if (CardiacRisk.canCalculateCardiacRiskScore()) {
-      updateUI();
-    }
-  }
-
-  /**
    * Method to update the UI for cardiac risk score based on the RRS calculation.
    * Updates components:
    *    1. Risk Description
@@ -404,39 +383,9 @@
    */
   function createRangeSliderGraphs() {
     buildRangeSliderDataModel();
-    createCRPSlider();
     createCholesterolSlider();
     createLDLSlider();
     createHDLSlider();
-  }
-
-  /**
-   * Method to create the C Reactive Protein slider based on the hsCReactiveProtein value from the
-   * Cardiac Risk data model.
-   */
-  function createCRPSlider() {
-    var thumbDisplayText = '', thumbBackgroundColor = '', thumbTextColor = '';
-    if (CardiacRisk.patientInfo.hsCReactiveProtein < 1) {
-      thumbDisplayText = CardiacRisk.graphData.crpSliderData.toolTipData.keys[0];
-      thumbBackgroundColor = CardiacRisk.colorClasses.lowRisk;
-    }
-    else if (CardiacRisk.patientInfo.hsCReactiveProtein >= 1 && CardiacRisk.patientInfo.hsCReactiveProtein <= 3) {
-      thumbDisplayText = CardiacRisk.graphData.crpSliderData.toolTipData.keys[1];
-      thumbBackgroundColor = CardiacRisk.colorClasses.moderateRisk;
-    }
-    else if (CardiacRisk.patientInfo.hsCReactiveProtein > 3) {
-      thumbDisplayText = CardiacRisk.graphData.crpSliderData.toolTipData.keys[2];
-      thumbBackgroundColor = CardiacRisk.colorClasses.highRisk;
-      thumbTextColor = CardiacRisk.colorClasses.rangeSliderThumbWhiteText;
-    }
-
-    CardiacRisk.graphData.crpSliderData.thumbDisplayText = thumbDisplayText;
-    CardiacRisk.graphData.crpSliderData.value = CardiacRisk.patientInfo.hsCReactiveProtein;
-    generateRangeSlider(CardiacRisk.graphData.crpSliderData);
-    changeBarBackgroundColor(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-
-    changeThumbBackgroundColor(CardiacRisk.graphData.crpSliderData.id, thumbBackgroundColor);
-    changeThumbTextColor(CardiacRisk.graphData.crpSliderData.id, thumbTextColor);
   }
 
   /**
@@ -591,10 +540,6 @@
    * This method updates the thumb position based on the resizing of page and resizing of the bar in the graph.
    */
   function adjustRangeSliderThumbPosition() {
-    updateThumbPosition(CardiacRisk.graphData.crpSliderData.id,
-        CardiacRisk.graphData.crpSliderData.value,
-        CardiacRisk.graphData.crpSliderData.lowerBound,
-        CardiacRisk.graphData.crpSliderData.upperBound);
     updateThumbPosition(CardiacRisk.graphData.totalCholesterolSliderData.id,
         CardiacRisk.graphData.totalCholesterolSliderData.value,
         CardiacRisk.graphData.totalCholesterolSliderData.lowerBound,

@@ -3,7 +3,7 @@ describe ('CardiacRiskController', function() {
 
   describe ('updatePatientDemographicsBanner', function() {
     it ('sets the UI elements with correct values when male', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,undefined,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,undefined,false,false);
       CardiacRisk.patientInfo.dateOfBirth = new Date(2016,5,22);
 
       var patientName = document.createElement('span');
@@ -41,7 +41,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('sets the UI elements with correct values when female', function() {
-      CardiacRisk.patientInfo = setPatientInfo('female',59,0.5,160,100,60,undefined,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('female',59,160,100,60,undefined,false,false);
       CardiacRisk.patientInfo.dateOfBirth = new Date(2016,5,22);
 
       var patientName = document.createElement('span');
@@ -161,7 +161,7 @@ describe ('CardiacRiskController', function() {
 
   describe('checkForIncompleteState', function(){
     it('sets UI elements for invalid sbp', function(){
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,undefined,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,undefined,false,false);
 
       var resultsInfo = document.createElement('div');
       resultsInfo.id = 'resultsInfo';
@@ -233,7 +233,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it('sets UI elements for valid sbp', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,false,false);
 
       var sbpInput = document.createElement('INPUT');
       sbpInput.id = 'sbpInput';
@@ -400,7 +400,7 @@ describe ('CardiacRiskController', function() {
 
   describe('onSBPInput', function(){
     it('updates value for systolic blood pressure on the UI', function(){
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,false,false);
 
       var sbpInput = document.createElement('INPUT');
       sbpInput.id = 'sbpInput';
@@ -419,7 +419,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it('updates value for systolic blood pressure on the UI when SysBP is undefined', function(){
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,undefined,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,undefined,false,false);
 
       var sbpInput = document.createElement('INPUT');
       sbpInput.id = 'sbpInput';
@@ -451,7 +451,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it('updates value for systolic blood pressure on the UI when SysBP is valid', function(){
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,false,false);
 
       var sbpInput = document.createElement('INPUT');
       sbpInput.id = 'sbpInput';
@@ -659,7 +659,7 @@ describe ('CardiacRiskController', function() {
   describe ('updateUIWhatIfNotSmoker', function() {
     it('updates correctly is patient is a smoker', function () {
 
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,true,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,true,false);
 
       var whatIfNotSmoker = document.createElement('div');
       whatIfNotSmoker.id = 'whatIfNotSmoker';
@@ -690,7 +690,7 @@ describe ('CardiacRiskController', function() {
 
     it('updates correctly is patient is not a smoker', function () {
 
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,false,false);
 
       var whatIfNotSmoker = document.createElement('div');
       whatIfNotSmoker.id = 'whatIfNotSmoker';
@@ -749,7 +749,6 @@ describe ('CardiacRiskController', function() {
     it ('invoked the specified methods', function() {
       var mockWindow = sinonSandbox.mock(window);
       mockWindow.expects('buildRangeSliderDataModel').once();
-      mockWindow.expects('createCRPSlider').once();
       mockWindow.expects('createCholesterolSlider').once();
       mockWindow.expects('createLDLSlider').once();
       mockWindow.expects('createHDLSlider').once();
@@ -758,62 +757,9 @@ describe ('CardiacRiskController', function() {
     });
   });
 
-  describe ('createCRPSlider', function() {
-    it ('invokes internal functions to create the slider hsCRP < 1', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.crpSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.lowRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, '');
-      createCRPSlider();
-
-      expect(CardiacRisk.graphData.crpSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.crpSliderData.toolTipData.keys[0]);
-      expect(CardiacRisk.graphData.crpSliderData.value).to.equal(0.5);
-
-      mockWindow.verify();
-    });
-
-    it ('invokes internal functions to create the slider hsCRP >=1 && hsCRP <= 3', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,1.5,160,100,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.crpSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.moderateRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, '');
-      createCRPSlider();
-
-      expect(CardiacRisk.graphData.crpSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.crpSliderData.toolTipData.keys[1]);
-      expect(CardiacRisk.graphData.crpSliderData.value).to.equal(1.5);
-
-      mockWindow.verify();
-    });
-
-    it ('invokes internal functions to create the slider hsCRP > 3', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,3.5,160,100,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.crpSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.highRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.rangeSliderThumbWhiteText);
-      createCRPSlider();
-
-      expect(CardiacRisk.graphData.crpSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.crpSliderData.toolTipData.keys[2]);
-      expect(CardiacRisk.graphData.crpSliderData.value).to.equal(3.5);
-
-      mockWindow.verify();
-    });
-  });
-
   describe ('createCholesterolSlider', function() {
     it ('invokes internal functions to create the slider totalCholesterol < 200', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -830,7 +776,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider totalCholesterol >= 200 && totalCholesterol < 240', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,1.5,210,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,210,100,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -847,7 +793,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider totalCholesterol >= 240', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,3.5,300,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,300,100,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -866,7 +812,7 @@ describe ('CardiacRiskController', function() {
 
   describe ('createLDLSlider', function() {
     it ('invokes internal functions to create the slider ldl < 100', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,90,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,90,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -883,7 +829,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider ldl >= 100 && ldl < 130', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,1.5,210,110,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,210,110,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -900,7 +846,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider ldl >= 130 && ldl < 160', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,3.5,300,140,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,300,140,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -917,7 +863,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider ldl >= 160 && ldl < 190', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,3.5,300,180,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,300,180,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -934,7 +880,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider ldl >= 190', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,3.5,300,200,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,300,200,60,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -951,7 +897,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('updates UI to hide the LDL graph when  ldl is undefined', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,3.5,300,undefined,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,300,undefined,60,119,false,false);
       buildRangeSliderDataModel();
 
       var contentLdlBadCholesterolSlider = document.createElement('header');
@@ -984,7 +930,7 @@ describe ('CardiacRiskController', function() {
 
   describe ('createHDLSlider', function() {
     it ('invokes internal functions to create the slider hdl < 40 for gender = male', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,30,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,30,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -1001,7 +947,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider hdl >= 40 && hdl < 60 for gender = male', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,1.5,160,100,50,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,50,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -1018,7 +964,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider hdl >= 60 for gender = male', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,3.5,160,100,70,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,70,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -1035,7 +981,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider hdl < 50 for gender = female', function() {
-      CardiacRisk.patientInfo = setPatientInfo('female',59,0.5,160,100,40,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('female',59,160,100,40,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -1052,7 +998,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider hdl >= 50 && hdl < 60 for gender = female', function() {
-      CardiacRisk.patientInfo = setPatientInfo('female',59,1.5,160,100,50,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('female',59,160,100,50,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -1069,7 +1015,7 @@ describe ('CardiacRiskController', function() {
     });
 
     it ('invokes internal functions to create the slider hdl >= 60 for gender = female', function() {
-      CardiacRisk.patientInfo = setPatientInfo('female',59,3.5,160,100,70,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('female',59,160,100,70,119,false,false);
       buildRangeSliderDataModel();
 
       var mockWindow = sinonSandbox.mock(window);
@@ -1099,7 +1045,7 @@ describe ('CardiacRiskController', function() {
       containerPatientDetails.id = 'containerPatientDetails';
       document.body.appendChild(containerPatientDetails);
 
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,false,false);
 
       adjustRelatedFactorsSize();
 
@@ -1111,13 +1057,8 @@ describe ('CardiacRiskController', function() {
 
   describe ('adjustRangeSliderThumbPosition', function() {
     it ('invokes the methods in the function', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,119,false,false);
       CardiacRisk.graphData = {};
-      var crpSliderData = {};
-      crpSliderData.id = 'data_id';
-      crpSliderData.value = 'data_value';
-      crpSliderData.lowerBound = 'data_lowerbound';
-      crpSliderData.upperBound = 'data_upperbound';
 
       var totalCholesterolSliderData = {};
       totalCholesterolSliderData.id = 'data_id_chol';
@@ -1137,7 +1078,6 @@ describe ('CardiacRiskController', function() {
       hdlSliderData.lowerBound = 'data_lowerbound_hdl';
       hdlSliderData.upperBound = 'data_upperbound_hdl';
 
-      CardiacRisk.graphData.crpSliderData = crpSliderData;
       CardiacRisk.graphData.totalCholesterolSliderData = totalCholesterolSliderData;
       CardiacRisk.graphData.ldlSliderData = ldlSliderData;
       CardiacRisk.graphData.hdlSliderData = hdlSliderData;

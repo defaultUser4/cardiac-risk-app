@@ -6,21 +6,6 @@
 function buildRangeSliderDataModel() {
 	var graphData = {};
 
-	var crpSliderData = {};
-	crpSliderData.id = 'cReactiveProteinSlider';
-	crpSliderData.titleLeft = 'C Reactive Protein';
-	crpSliderData.titleRight = 'mg/L';
-	crpSliderData.lowerBound = 0.03;
-	crpSliderData.upperBound = 20;
-	crpSliderData.barBoundsLowDisplay = 'Low';
-	crpSliderData.barBoundsHighDisplay = 'High';
-	crpSliderData.toolTipData = {
-		'keys' : ['Low', 'Moderate', 'High'],
-		'values': ['0.03 - 0.9', '1 - 2.9', '3 - 20'],
-		'styleClass': 'tooltipsterCardiacRiskCRP'
-	};
-	graphData.crpSliderData = crpSliderData;
-
 	var totalCholesterolSliderData = {};
 	totalCholesterolSliderData.id = 'totalCholesterolSlider';
 	totalCholesterolSliderData.titleLeft = 'Total Cholesterol';
