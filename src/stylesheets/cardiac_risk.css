@@ -321,13 +321,6 @@
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
 }
-.warningNonDiabetics {
-  font-family: 'HelveticaNeue', 'Helvetica', 'Arial', 'sans-serif';
-  font-weight: normal;
-  font-size: 14px;
-  color: #1C1F21;
-  font-style: italic;
-}
 .relatedFactorsForms {
   padding-top: 29px;
   padding-bottom: 22px;
