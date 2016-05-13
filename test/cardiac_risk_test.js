@@ -593,42 +593,6 @@ describe ('CardiacRisk', function() {
     });
   });
 
-  describe ('computeRRS', function() {
-    describe ('for men', function() {
-      it ('with the score in bounds', function () {
-        var malePatient = setPatientInfo('male',79,220,165,55,122,false,false);
-        assert.equal(21, CardiacRisk.computeRRS(malePatient));
-      });
-
-      it ('with the score at the boundary of 100', function() {
-        var malePatientBoundary = setPatientInfo('male',55,350,250,60,122,true,true);
-        assert.equal(18, CardiacRisk.computeRRS(malePatientBoundary));
-      });
-
-      it ('calculates score when ldl is missing', function() {
-        var malePatient = setPatientInfo('male',79,220,'undefined',55,122,false,false);
-        assert.equal(21, CardiacRisk.computeRRS(malePatient));
-      });
-    });
-
-    describe ('for women', function() {
-      it ('with the score in bounds', function () {
-        var malePatient = setPatientInfo('female',79,220,165,55,122,false,false);
-        assert.equal(10, CardiacRisk.computeRRS(malePatient));
-      });
-
-      it ('with the score at the boundary of 100', function() {
-        var malePatientBoundary = setPatientInfo('female',55,350,250,60,122,true,true);
-        assert.equal(11, CardiacRisk.computeRRS(malePatientBoundary));
-      });
-
-      it ('calculates score when ldl is missing', function() {
-        var malePatient = setPatientInfo('female',79,220,'undefined',55,122,false,false);
-        assert.equal(10, CardiacRisk.computeRRS(malePatient));
-      });
-    });
-  });
-
   describe ('computeWhatIfSBP', function() {
     it('it returns valid display text and value if systolic blood pressure is > 129', function(){
       setPatientInfo('male',59,150,130,40,106,undefined,undefined,CardiacRisk.patientInfo);
@@ -639,7 +603,7 @@ describe ('CardiacRisk', function() {
       expectedResponse.valueText = '120 mm/Hg';
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeRRS").returns(5);
+      mock.expects("computeTenYearASCVD").returns(5);
 
       var functionResponse = CardiacRisk.computeWhatIfSBP();
 
@@ -658,7 +622,7 @@ describe ('CardiacRisk', function() {
       expectedResponse.valueText = '119 mm/Hg';
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeRRS").returns(6);
+      mock.expects("computeTenYearASCVD").returns(6);
 
       var functionResponse = CardiacRisk.computeWhatIfSBP();
 
@@ -696,7 +660,7 @@ describe ('CardiacRisk', function() {
       patientInfoCopy.relatedFactors.smoker = false;
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects('computeRRS').once().withExactArgs(patientInfoCopy).returns(6);
+      mock.expects('computeTenYearASCVD').once().withExactArgs(patientInfoCopy).returns(6);
 
       var functionResponse = CardiacRisk.computeWhatIfNotSmoker();
 
@@ -711,7 +675,7 @@ describe ('CardiacRisk', function() {
       setPatientInfo('male',59,160,100,60,119,false,false,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects('computeRRS').once().withExactArgs(CardiacRisk.patientInfo).returns(6);
+      mock.expects('computeTenYearASCVD').once().withExactArgs(CardiacRisk.patientInfo).returns(6);
 
       var functionResponse = CardiacRisk.computeWhatIfOptimal();
 

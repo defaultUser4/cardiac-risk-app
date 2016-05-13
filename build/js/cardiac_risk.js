@@ -226,19 +226,6 @@
     CardiacRisk.computeAgeFromBirthDate = computeAgeFromBirthDate;
 
     /**
-     * Computes the widely-used Reynolds Risk Score, a score that estimates the 10-year cardiovascular risk of an individual.
-     * See {@link http://www.reynoldsriskscore.org/}
-     * @method computeRRS
-     * @param {object} patientInfo - patientInfo object from CardiacRisk data model.
-     */
-    var computeRRS = function (patientInfo) {
-        var riskResult = 0;
-
-        return Math.round(riskResult < 10 ? riskResult.toPrecision(1) : riskResult.toPrecision(2));
-    };
-    CardiacRisk.computeRRS = computeRRS;
-
-    /**
     * Computes the ASCVD Risk Estimate for an individual over the next 10 years.
     * @param patientInfo - patientInfo object from CardiacRisk data model
     */
@@ -287,7 +274,8 @@
                     (-1.795 * ageSmoke) + 0.658 * Number(patientInfo.relatedFactors.diabetic);
             }
 
-            return (1 - Math.pow(s010Ret, Math.exp(predictRet - mnxbRet)));
+            var pct = (1 - Math.pow(s010Ret, Math.exp(predictRet - mnxbRet)));
+            return Math.round(pct * 100);
         };
         return calculateScore();
     };
@@ -378,7 +366,7 @@
             return undefined;
         }
 
-        var score = CardiacRisk.computeRRS(patientInfoCopy);
+        var score = CardiacRisk.computeTenYearASCVD(patientInfoCopy);
         whatIfSBP.value = score + '%';
         whatIfSBP.valueText = patientInfoCopy.systolicBloodPressure + ' mm/Hg';
         return whatIfSBP;
@@ -392,7 +380,7 @@
     var computeWhatIfNotSmoker = function () {
         var patientInfoCopy = $.extend(true, {}, CardiacRisk.patientInfo);
         patientInfoCopy.relatedFactors.smoker = false;
-        return CardiacRisk.computeRRS(patientInfoCopy);
+        return CardiacRisk.computeTenYearASCVD(patientInfoCopy);
     };
     CardiacRisk.computeWhatIfNotSmoker = computeWhatIfNotSmoker;
 
@@ -407,7 +395,7 @@
         patientInfoCopy.ldl = 100;
         patientInfoCopy.systolicBloodPressure = 119;
         patientInfoCopy.relatedFactors.smoker = false;
-        return CardiacRisk.computeRRS(patientInfoCopy);
+        return CardiacRisk.computeTenYearASCVD(patientInfoCopy);
     };
     CardiacRisk.computeWhatIfOptimal = computeWhatIfOptimal;
 
@@ -960,7 +948,7 @@
    *    2. Risk Bar
    */
   function updateUICardiacRiskScore() {
-    var score = CardiacRisk.computeRRS(CardiacRisk.patientInfo);
+    var score = CardiacRisk.computeTenYearASCVD(CardiacRisk.patientInfo);
 
     $('#riskDescriptionText').text('Your chance of having a heart attack, stroke, or other ' +
     'heart disease event at some point in the next 10 years is ');
@@ -995,9 +983,8 @@
       $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year Risk Estimate can only be computed for those in the age' +
           ' range of 40-79');
     } else {
-      $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + Math.round((tenYearASCVDScore * 100) * 10) / 10 + '%');
-      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' +
-          Math.round((tenYearASCVDOptimalScore * 100) * 10) / 10 + '%');
+      $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + tenYearASCVDScore + '%');
+      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' + tenYearASCVDOptimalScore + '%');
     }
 
     if (lifetimeASCVDScore === null || lifetimeASCVDOptimalScore === null) {

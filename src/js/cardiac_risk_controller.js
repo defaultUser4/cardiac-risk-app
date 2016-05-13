@@ -285,7 +285,7 @@
    *    2. Risk Bar
    */
   function updateUICardiacRiskScore() {
-    var score = CardiacRisk.computeRRS(CardiacRisk.patientInfo);
+    var score = CardiacRisk.computeTenYearASCVD(CardiacRisk.patientInfo);
 
     $('#riskDescriptionText').text('Your chance of having a heart attack, stroke, or other ' +
     'heart disease event at some point in the next 10 years is ');
@@ -320,9 +320,8 @@
       $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year Risk Estimate can only be computed for those in the age' +
           ' range of 40-79');
     } else {
-      $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + Math.round((tenYearASCVDScore * 100) * 10) / 10 + '%');
-      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' +
-          Math.round((tenYearASCVDOptimalScore * 100) * 10) / 10 + '%');
+      $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + tenYearASCVDScore + '%');
+      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' + tenYearASCVDOptimalScore + '%');
     }
 
     if (lifetimeASCVDScore === null || lifetimeASCVDOptimalScore === null) {

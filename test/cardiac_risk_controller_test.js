@@ -518,7 +518,7 @@ describe ('CardiacRiskController', function() {
       CardiacRisk.patientInfo = {};
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeRRS").returns(4);
+      mock.expects("computeTenYearASCVD").returns(4);
 
       updateUICardiacRiskScore();
 
@@ -540,7 +540,7 @@ describe ('CardiacRiskController', function() {
       CardiacRisk.patientInfo = {};
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeRRS").returns(5);
+      mock.expects("computeTenYearASCVD").returns(5);
 
       updateUICardiacRiskScore();
 
@@ -562,7 +562,7 @@ describe ('CardiacRiskController', function() {
       CardiacRisk.patientInfo = {};
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeRRS").returns(10);
+      mock.expects("computeTenYearASCVD").returns(10);
 
       updateUICardiacRiskScore();
 
@@ -584,7 +584,7 @@ describe ('CardiacRiskController', function() {
       CardiacRisk.patientInfo = {};
 
       var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeRRS").returns(20);
+      mock.expects("computeTenYearASCVD").returns(20);
 
       updateUICardiacRiskScore();
 
