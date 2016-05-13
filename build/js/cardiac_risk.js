@@ -18,7 +18,7 @@
      * Loads patient's FHIR data and updates the CardiacRisk data model.
      * Fetches patient context to get basic patient info and observations to get lab results based on the
      * supplied LOINC codes.
-     * LOINC Codes used : 'http://loinc.org|30522-7', 'http://loinc.org|14647-2', 'http://loinc.org|2093-3',
+     * LOINC Codes used : 'http://loinc.org|14647-2', 'http://loinc.org|2093-3',
      * 'http://loinc.org|2085-9', 'http://loinc.org|8480-6', 'http://loinc.org|2089-1', 'http://loinc.org|13457-7'
      * @method fetchDataAndPopulateCardiacRiskObject
      */
@@ -46,7 +46,7 @@
                     query: {
                         code: {
                             $or: ['http://loinc.org|2089-1', 'http://loinc.org|13457-7',
-                                'http://loinc.org|30522-7', 'http://loinc.org|14647-2',
+                                'http://loinc.org|14647-2',
                                 'http://loinc.org|2093-3', 'http://loinc.org|2085-9', 'http://loinc.org|8480-6'
                             ]
                         }
@@ -66,7 +66,6 @@
                         var relatedFactors = {};
                         /* Default to undefined since we want to remove error state on radio buttons on the first go */
                         relatedFactors.smoker = undefined;
-                        relatedFactors.familyHeartAttackHistory = undefined;
                         relatedFactors.race = 'white';
                         relatedFactors.hypertension = true;
                         relatedFactors.diabetic = true;
@@ -105,7 +104,6 @@
     var processLabsData = function (labsByLoincCodes) {
         CardiacRisk.hasObservationWithUnsupportedUnits = false;
 
-        CardiacRisk.patientInfo.hsCReactiveProtein = CardiacRisk.getHSCRPValue(labsByLoincCodes("30522-7"));
         CardiacRisk.patientInfo.totalCholesterol = CardiacRisk.getCholesterolValue(labsByLoincCodes('14647-2', '2093-3'));
         CardiacRisk.patientInfo.hdl = CardiacRisk.getCholesterolValue(labsByLoincCodes('2085-9'));
         CardiacRisk.patientInfo.ldl = CardiacRisk.getCholesterolValue(labsByLoincCodes('2089-1'));
@@ -151,26 +149,6 @@
         });
     };
     CardiacRisk.getCholesterolValue = getCholesterolValue;
-
-    /**
-     * Fetches current high sensitivity C-reactive protein into value in mg/L
-     * @method getHSCRPValue
-     * @param {object} hsCRPObservations - hscrp array object with valueQuantity elements having units and value.
-     */
-    var getHSCRPValue = function (hsCRPObservations) {
-        return CardiacRisk.getFirstValidDataPointValueFromObservations(hsCRPObservations, function (dataPoint) {
-            if (dataPoint.valueQuantity.unit === 'mg/L') {
-                return parseFloat(dataPoint.valueQuantity.value);
-            }
-            else if (dataPoint.valueQuantity.unit === 'mmol/L') {
-                return parseFloat(dataPoint.valueQuantity.value) / 0.10;
-            }
-            else {
-                return undefined;
-            }
-        });
-    };
-    CardiacRisk.getHSCRPValue = getHSCRPValue;
 
     /**
      * Fetches current Systolic Blood Pressure
@@ -248,60 +226,6 @@
     CardiacRisk.computeAgeFromBirthDate = computeAgeFromBirthDate;
 
     /**
-     * Computes the widely-used Reynolds Risk Score, a score that estimates the 10-year cardiovascular risk of an individual.
-     * See {@link http://www.reynoldsriskscore.org/}
-     * @method computeRRS
-     * @param {object} patientInfo - patientInfo object from CardiacRisk data model.
-     */
-    var computeRRS = function (patientInfo) {
-        var params = {};
-        if (patientInfo.gender.toLowerCase() === 'female') {
-            params = {
-                'age': 0.0799,
-                'sbp': 3.137,
-                'hsCRP': 0.180,
-                'cholesterol': 1.382,
-                'HDL': -1.172,
-                'smoker': 0.818,
-                'fx_of_mi': 0.438
-            };
-        } else if (patientInfo.gender.toLowerCase() === 'male') {
-            params = {
-                'age': 4.385,
-                'sbp': 2.607,
-                'hsCRP': 0.102,
-                'cholesterol': 0.963,
-                'HDL': -0.772,
-                'smoker': 0.405,
-                'fx_of_mi': 0.541
-            };
-        }
-
-        function computeTotalParams(params, patientInfo) {
-            var ageParam = params.age * (patientInfo.gender.toLowerCase() === 'female' ? patientInfo.age : Math.log(patientInfo.age));
-            var sbpParam = params.sbp * Math.log(patientInfo.systolicBloodPressure);
-            var crpParam = params.hsCRP * Math.log(patientInfo.hsCReactiveProtein);
-            var cholesterolParam = params.cholesterol * Math.log(patientInfo.totalCholesterol);
-            var hdlParam = params.HDL * Math.log(patientInfo.hdl);
-            var smokerParam = params.smoker * (patientInfo.relatedFactors.smoker ? 1 : 0);
-            var famHistoryParam = params.fx_of_mi * (patientInfo.relatedFactors.familyHeartAttackHistory ? 1 : 0);
-            return ageParam + sbpParam + crpParam + cholesterolParam + hdlParam + smokerParam + famHistoryParam;
-        }
-
-        function computeResult(params, patientInfo) {
-            var scoreConstants = (patientInfo.gender.toLowerCase() === 'female') ? [22.325, 0.98634] : [33.097, 0.8990];
-            var totalParams = computeTotalParams(params, patientInfo);
-            var result = (1 - Math.pow(scoreConstants[1], (Math.exp(totalParams - scoreConstants[0])))) * 100;
-            return result;
-        }
-
-        var riskResult = computeResult(params, patientInfo);
-
-        return Math.round(riskResult < 10 ? riskResult.toPrecision(1) : riskResult.toPrecision(2));
-    };
-    CardiacRisk.computeRRS = computeRRS;
-
-    /**
     * Computes the ASCVD Risk Estimate for an individual over the next 10 years.
     * @param patientInfo - patientInfo object from CardiacRisk data model
     */
@@ -350,7 +274,8 @@
                     (-1.795 * ageSmoke) + 0.658 * Number(patientInfo.relatedFactors.diabetic);
             }
 
-            return (1 - Math.pow(s010Ret, Math.exp(predictRet - mnxbRet)));
+            var pct = (1 - Math.pow(s010Ret, Math.exp(predictRet - mnxbRet)));
+            return Math.round(pct * 100);
         };
         return calculateScore();
     };
@@ -441,7 +366,7 @@
             return undefined;
         }
 
-        var score = CardiacRisk.computeRRS(patientInfoCopy);
+        var score = CardiacRisk.computeTenYearASCVD(patientInfoCopy);
         whatIfSBP.value = score + '%';
         whatIfSBP.valueText = patientInfoCopy.systolicBloodPressure + ' mm/Hg';
         return whatIfSBP;
@@ -455,7 +380,7 @@
     var computeWhatIfNotSmoker = function () {
         var patientInfoCopy = $.extend(true, {}, CardiacRisk.patientInfo);
         patientInfoCopy.relatedFactors.smoker = false;
-        return CardiacRisk.computeRRS(patientInfoCopy);
+        return CardiacRisk.computeTenYearASCVD(patientInfoCopy);
     };
     CardiacRisk.computeWhatIfNotSmoker = computeWhatIfNotSmoker;
 
@@ -465,14 +390,12 @@
      */
     var computeWhatIfOptimal = function () {
         var patientInfoCopy = $.extend(true, {}, CardiacRisk.patientInfo);
-        patientInfoCopy.hsCReactiveProtein = 0.5;
         patientInfoCopy.totalCholesterol = 160;
         patientInfoCopy.hdl = 60;
         patientInfoCopy.ldl = 100;
         patientInfoCopy.systolicBloodPressure = 119;
         patientInfoCopy.relatedFactors.smoker = false;
-        patientInfoCopy.relatedFactors.familyHeartAttackHistory = false;
-        return CardiacRisk.computeRRS(patientInfoCopy);
+        return CardiacRisk.computeTenYearASCVD(patientInfoCopy);
     };
     CardiacRisk.computeWhatIfOptimal = computeWhatIfOptimal;
 
@@ -493,11 +416,6 @@
 
             patientActions.doctorHeader = 'Talk to your doctor';
             patientActions.doctor = 'Discuss the need to follow up with your primary care provider to monitor your health';
-
-            if (CardiacRisk.patientInfo.hsCReactiveProtein <= 0.5) {
-                patientActions.retesting = 'Periodically retest your levels to continually monitor ' +
-                'your health.';
-            }
         }
         else if (CardiacRisk.patientInfo.totalCholesterol >= 160 ||
             CardiacRisk.patientInfo.ldl >= 130 ||
@@ -510,11 +428,6 @@
             patientActions.doctorHeader = 'Talk to your doctor';
             patientActions.doctor = 'Discuss statins or other medications with your primary care ' +
             'provider that can help lower cholesterol.';
-
-            if (CardiacRisk.patientInfo.hsCReactiveProtein >= 0.5) {
-                patientActions.retesting = 'Retesting in 1 to 2 weeks can help exclude temporary ' +
-                'spikes in your blood levels.';
-            }
         }
 
         return patientActions;
@@ -524,18 +437,14 @@
     /**
      *  Method to generate error message text by validating availability of lab values.
      *  Checks for :
-     *      1. High Sensitivity C Reactive Protein value
-     *      2. Total Cholesterol Value
-     *      3. HDL
+     *      1. Total Cholesterol Value
+     *      2. HDL
      * @returns {string} Error string based on the missing lab value.
      */
     var validateLabsForMissingValueErrors = function () {
         var errorText = '';
-        if (isNaN(CardiacRisk.patientInfo.hsCReactiveProtein) || CardiacRisk.patientInfo.hsCReactiveProtein.length === 0 ||
-            CardiacRisk.patientInfo.hsCReactiveProtein === undefined) {
-            errorText = 'Cardiac Risk cannot be calculated without a valid value for High sensitivity C-Reactive Protein.';
-        }
-        else if (isNaN(CardiacRisk.patientInfo.totalCholesterol) || CardiacRisk.patientInfo.totalCholesterol.length === 0 ||
+
+        if (isNaN(CardiacRisk.patientInfo.totalCholesterol) || CardiacRisk.patientInfo.totalCholesterol.length === 0 ||
             CardiacRisk.patientInfo.totalCholesterol === undefined) {
             errorText = 'Cardiac Risk cannot be calculated without a valid value for Total Cholesterol.';
         }
@@ -550,20 +459,14 @@
     /**
      * Method to generate error message text by checking for value bounds.
      * Checks for :
-     *      1. High Sensitivity C Reactive Protein value for bounds : 0.03 - 20
-     *      2. Total Cholesterol Value for bounds : 140 - 401
-     *      3. HDL for bounds : 30 - 150
+     *   1. Total Cholesterol Value for bounds : 140 - 401
+     *   2. HDL for bounds : 30 - 150
      * @returns {string} Error string based on out of bounds lab values.
      */
     var validateLabsForOutOfBoundsValueErrors = function () {
         var errorText = '';
-        if (CardiacRisk.patientInfo.hsCReactiveProtein < 0.03) {
-            errorText = 'C-Reactive Protein levels are too low to return a cardiac risk score.';
-        }
-        else if (CardiacRisk.patientInfo.hsCReactiveProtein > 20) {
-            errorText = 'C-Reactive Protein levels are too high to return a cardiac risk score.';
-        }
-        else if (CardiacRisk.patientInfo.totalCholesterol < 140) {
+
+        if (CardiacRisk.patientInfo.totalCholesterol < 140) {
             errorText = 'Total Cholesterol levels are too low to return a cardiac risk score.';
         }
         else if (CardiacRisk.patientInfo.totalCholesterol > 401) {
@@ -598,7 +501,6 @@
         }
         else if (CardiacRisk.patientInfo.relatedFactors.smoker === false &&
             CardiacRisk.optimalLabs() &&
-            CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory === true &&
             score > 5) {
             whatIfOptimalValues.value = '';
             whatIfOptimalValues.valueText = 'Your risk is the lowest it can be based on the supplied information';
@@ -630,14 +532,12 @@
      * Checks for :
      *    1. Systolic Blood Pressure
      *    2. Patients Smoking status
-     *    3. Patients family heart attach history.
      * @returns {boolean} Indicating if RRS can be calculated.
      */
     var canCalculateCardiacRiskScore = function () {
 
         if (CardiacRisk.isValidSysBP(CardiacRisk.patientInfo.systolicBloodPressure) &&
-            CardiacRisk.patientInfo.relatedFactors.smoker !== undefined &&
-            CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory !== undefined) {
+            CardiacRisk.patientInfo.relatedFactors.smoker !== undefined) {
             return true;
         }
         return false;
@@ -673,8 +573,7 @@
      * @returns {boolean} : Indicating if all labs are available.
      */
     var isLabsNotAvailable = function () {
-        if (CardiacRisk.patientInfo.hsCReactiveProtein === undefined ||
-            CardiacRisk.patientInfo.totalCholesterol === undefined ||
+        if (CardiacRisk.patientInfo.totalCholesterol === undefined ||
             CardiacRisk.patientInfo.hdl === undefined ||
             CardiacRisk.patientInfo.ldl === undefined ||
             CardiacRisk.patientInfo.systolicBloodPressure === undefined) {
@@ -690,8 +589,7 @@
      * @returns {boolean} : Indicating if required labs are available.
      */
     var isRequiredLabsNotAvailable = function () {
-        if (CardiacRisk.patientInfo.hsCReactiveProtein === undefined ||
-            CardiacRisk.patientInfo.totalCholesterol === undefined ||
+        if (CardiacRisk.patientInfo.totalCholesterol === undefined ||
             CardiacRisk.patientInfo.hdl === undefined) {
             return true;
         }
@@ -721,9 +619,7 @@
      */
     var optimalLabs = function () {
         var optimal = false;
-        if (CardiacRisk.patientInfo.hsCReactiveProtein >= 0.03 &&
-            CardiacRisk.patientInfo.hsCReactiveProtein <= 0.9 &&
-            CardiacRisk.patientInfo.totalCholesterol >= 140 &&
+        if (CardiacRisk.patientInfo.totalCholesterol >= 140 &&
             CardiacRisk.patientInfo.totalCholesterol <= 199 &&
             CardiacRisk.patientInfo.hdl >= 60 &&
             CardiacRisk.patientInfo.hdl <= 150 &&
@@ -912,7 +808,6 @@
     $('#sbpInput').keypress(function(event) {return isNumberKey(event);});
     $('#sbpInput').on('focusout', sbpInputFocusOutHandler);
     $('[name="smoker"]').change(onSmokerInput);
-    $('[name="familyHeartAttackHistory"]').change(onFamilyHistoryInput);
     $('[name="hypertension"]').change(onHypertensionInput);
     $('[name="race"]').change(onRaceInput);
     $('[name="diabetic"]').change(onDiabeticInput);
@@ -1047,33 +942,13 @@
   }
 
   /**
-   * Event listener method for the family heart attach history status radio button value change.
-   */
-  function onFamilyHistoryInput() {
-    if (CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory === undefined) {
-      $('#legendFamilyHistoryError').toggleClass('relatedFactorsErrors relatedFactorsErrorsHidden');
-      $('#asteriskFamilyHistory').removeClass().addClass('contentHidden');
-    }
-
-    if ($(this).val() === 'yes') {
-      CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory = true;
-    } else {
-      CardiacRisk.patientInfo.relatedFactors.familyHeartAttackHistory = false;
-    }
-
-    if (CardiacRisk.canCalculateCardiacRiskScore()) {
-      updateUI();
-    }
-  }
-
-  /**
    * Method to update the UI for cardiac risk score based on the RRS calculation.
    * Updates components:
    *    1. Risk Description
    *    2. Risk Bar
    */
   function updateUICardiacRiskScore() {
-    var score = CardiacRisk.computeRRS(CardiacRisk.patientInfo);
+    var score = CardiacRisk.computeTenYearASCVD(CardiacRisk.patientInfo);
 
     $('#riskDescriptionText').text('Your chance of having a heart attack, stroke, or other ' +
     'heart disease event at some point in the next 10 years is ');
@@ -1108,9 +983,8 @@
       $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year Risk Estimate can only be computed for those in the age' +
           ' range of 40-79');
     } else {
-      $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + Math.round((tenYearASCVDScore * 100) * 10) / 10 + '%');
-      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' +
-          Math.round((tenYearASCVDOptimalScore * 100) * 10) / 10 + '%');
+      $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + tenYearASCVDScore + '%');
+      $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' + tenYearASCVDOptimalScore + '%');
     }
 
     if (lifetimeASCVDScore === null || lifetimeASCVDOptimalScore === null) {
@@ -1171,39 +1045,9 @@
    */
   function createRangeSliderGraphs() {
     buildRangeSliderDataModel();
-    createCRPSlider();
     createCholesterolSlider();
     createLDLSlider();
     createHDLSlider();
-  }
-
-  /**
-   * Method to create the C Reactive Protein slider based on the hsCReactiveProtein value from the
-   * Cardiac Risk data model.
-   */
-  function createCRPSlider() {
-    var thumbDisplayText = '', thumbBackgroundColor = '', thumbTextColor = '';
-    if (CardiacRisk.patientInfo.hsCReactiveProtein < 1) {
-      thumbDisplayText = CardiacRisk.graphData.crpSliderData.toolTipData.keys[0];
-      thumbBackgroundColor = CardiacRisk.colorClasses.lowRisk;
-    }
-    else if (CardiacRisk.patientInfo.hsCReactiveProtein >= 1 && CardiacRisk.patientInfo.hsCReactiveProtein <= 3) {
-      thumbDisplayText = CardiacRisk.graphData.crpSliderData.toolTipData.keys[1];
-      thumbBackgroundColor = CardiacRisk.colorClasses.moderateRisk;
-    }
-    else if (CardiacRisk.patientInfo.hsCReactiveProtein > 3) {
-      thumbDisplayText = CardiacRisk.graphData.crpSliderData.toolTipData.keys[2];
-      thumbBackgroundColor = CardiacRisk.colorClasses.highRisk;
-      thumbTextColor = CardiacRisk.colorClasses.rangeSliderThumbWhiteText;
-    }
-
-    CardiacRisk.graphData.crpSliderData.thumbDisplayText = thumbDisplayText;
-    CardiacRisk.graphData.crpSliderData.value = CardiacRisk.patientInfo.hsCReactiveProtein;
-    generateRangeSlider(CardiacRisk.graphData.crpSliderData);
-    changeBarBackgroundColor(CardiacRisk.graphData.crpSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-
-    changeThumbBackgroundColor(CardiacRisk.graphData.crpSliderData.id, thumbBackgroundColor);
-    changeThumbTextColor(CardiacRisk.graphData.crpSliderData.id, thumbTextColor);
   }
 
   /**
@@ -1358,10 +1202,6 @@
    * This method updates the thumb position based on the resizing of page and resizing of the bar in the graph.
    */
   function adjustRangeSliderThumbPosition() {
-    updateThumbPosition(CardiacRisk.graphData.crpSliderData.id,
-        CardiacRisk.graphData.crpSliderData.value,
-        CardiacRisk.graphData.crpSliderData.lowerBound,
-        CardiacRisk.graphData.crpSliderData.upperBound);
     updateThumbPosition(CardiacRisk.graphData.totalCholesterolSliderData.id,
         CardiacRisk.graphData.totalCholesterolSliderData.value,
         CardiacRisk.graphData.totalCholesterolSliderData.lowerBound,
@@ -1383,21 +1223,6 @@
  */
 function buildRangeSliderDataModel() {
 	var graphData = {};
-
-	var crpSliderData = {};
-	crpSliderData.id = 'cReactiveProteinSlider';
-	crpSliderData.titleLeft = 'C Reactive Protein';
-	crpSliderData.titleRight = 'mg/L';
-	crpSliderData.lowerBound = 0.03;
-	crpSliderData.upperBound = 20;
-	crpSliderData.barBoundsLowDisplay = 'Low';
-	crpSliderData.barBoundsHighDisplay = 'High';
-	crpSliderData.toolTipData = {
-		'keys' : ['Low', 'Moderate', 'High'],
-		'values': ['0.03 - 0.9', '1 - 2.9', '3 - 20'],
-		'styleClass': 'tooltipsterCardiacRiskCRP'
-	};
-	graphData.crpSliderData = crpSliderData;
 
 	var totalCholesterolSliderData = {};
 	totalCholesterolSliderData.id = 'totalCholesterolSlider';

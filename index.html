@@ -18,7 +18,7 @@
 		</div>
 		<header id= "pageHeader" class="headerLayout">
 			<span id='pageHeaderLeft' class="headerLeftLayout">Cardiac Risk</span>
-			<span id='pageHeaderRight' class="headerRightLayout">Your cardiac risk is determined by the <a href='http://www.reynoldsriskscore.org/'>Reynolds Risk Score</a>.</span>
+			<span id='pageHeaderRight' class="headerRightLayout">Your cardiac risk is determined by the <a href='http://tools.acc.org/ASCVD-Risk-Estimator/#page_about'>10-Year Atherosclerotic Cardiovascular Disease (ASCVD) Risk Score</a>.</span>
 		</header>
 		<div id="pageLoading" class="loadingIndicatorLayout">
 			<span id="spinner" class="fa fa-spinner fa-spin"></span><span>Loading</span>
@@ -53,7 +53,6 @@
 						</div>
 					</div><!-- resultsInfo section -->
 					<div id='resultsSliders' class="resultSlidersLayout contentHidden">
-						<div id="cReactiveProteinSlider"></div>
 						<div id="totalCholesterolSlider"></div>
 						<div id="cholesterolSection" class="cholesterolSectionLayout">
 							<div class="cholesterolSectionLineLayout">
@@ -79,14 +78,6 @@
 									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="smoker" value="no">No</label>
 								</p>
 								<span id="legendSmokerError" class="relatedFactorsErrors">This field is required.</span>
-							</fieldset>
-							<fieldset>
-								<legend class="relatedFactorsQuestions"><span id="asteriskFamilyHistory" class="asterisk">*</span>Have either your mother or father had a heart attack before age 60?</legend>
-								<p>
-									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="familyHeartAttackHistory" value="yes">Yes</label>
-									<label class="relatedFactorsAnswers"><input type="radio" class="input" name="familyHeartAttackHistory" value="no">No</label>
-								</p>
-								<span id="legendFamilyHistoryError" class="relatedFactorsErrors">This field is required.</span>
 							</fieldset>
 							<fieldset>
 								<legend class="relatedFactorsQuestions"><span id="asteriskHypertension" class="asterisk">*</span>Do you have hypertension?</legend>
@@ -118,7 +109,6 @@
 								<div><label class="relatedFactorsAnswersSysBP"><input type="text" id="sbpInput" class="sbpInput" maxlength="3">mmHg</label></div>
 								<span id="legendSysBPError" class="relatedFactorsErrors">Value between 105 - 200 is required.</span>
 							</fieldset>
-							<div class="warningNonDiabetics">*Reynolds Risk Score only applies to non-diabetics.</div>
 						</form>
 					</div> <!-- patientDetails section -->
 				</div>
