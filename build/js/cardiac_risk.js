@@ -988,10 +988,8 @@
     }
 
     if (lifetimeASCVDScore === null || lifetimeASCVDOptimalScore === null) {
-      $('#lifetimeASCVDEstimate').text('Lifetime ASCVD Risk Estimate can only be computed for those in the ' +
-          'age range of 20-59');
-      $('#lifetimeASCVDEstimate').text('Lifetime ASCVD Risk Estimate can only be computed for those in the ' +
-          'age range of 20-59');
+      $('#lifetimeASCVDEstimate').addClass('contentHidden');
+      $('#lifetimeASCVDOptimalEstimate').addClass('contentHidden');
     } else {
       $('#lifetimeASCVDEstimate').text('Lifetime ASCVD Risk Estimate: ' + lifetimeASCVDScore + '%');
       $('#lifetimeASCVDOptimalEstimate').text('Lifetime ASCVD Risk Estimate (optimal conditions): ' +
