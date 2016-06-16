@@ -4,7 +4,7 @@ describe ('CardiacRiskController', function() {
   describe ('updatePatientDemographicsBanner', function() {
     it ('sets the UI elements with correct values when male', function() {
       CardiacRisk.patientInfo = setPatientInfo('male',59,160,100,60,undefined,false,false);
-      CardiacRisk.patientInfo.dateOfBirth = new Date(2016,5,22);
+      CardiacRisk.patientInfo.dateOfBirth = new Date(2016,4,22);
 
       var patientName = document.createElement('span');
       patientName.id = 'patientName';
@@ -42,7 +42,7 @@ describe ('CardiacRiskController', function() {
 
     it ('sets the UI elements with correct values when female', function() {
       CardiacRisk.patientInfo = setPatientInfo('female',59,160,100,60,undefined,false,false);
-      CardiacRisk.patientInfo.dateOfBirth = new Date(2016,5,22);
+      CardiacRisk.patientInfo.dateOfBirth = new Date(2016,4,22);
 
       var patientName = document.createElement('span');
       patientName.id = 'patientName';

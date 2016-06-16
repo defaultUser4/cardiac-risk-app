@@ -49,7 +49,7 @@
       $('#patientGender').text('F');
     }
     var date = CardiacRisk.patientInfo.dateOfBirth;
-    var dobString = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
+    var dobString = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
     $('#patientDOB').text(dobString);
   }
 

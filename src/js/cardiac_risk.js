@@ -58,7 +58,7 @@
                         PatientInfo.firstName = patientData.name[0].given.join(' ');
                         PatientInfo.lastName = patientData.name[0].family.join(' ');
                         PatientInfo.gender = patientData.gender;
-                        PatientInfo.dateOfBirth = new Date(patientData.birthDate);
+                        PatientInfo.dateOfBirth = new Date((patientData.birthDate).replace(/-/g, '\/'));
                         PatientInfo.age = CardiacRisk.computeAgeFromBirthDate(new Date(PatientInfo.dateOfBirth.valueOf()));
 
                         CardiacRisk.patientInfo = PatientInfo;
