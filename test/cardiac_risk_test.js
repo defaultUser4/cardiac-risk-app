@@ -22,6 +22,29 @@ describe ('CardiacRisk', function() {
     });
   });
 
+  describe ('computeAgeFromBirthDate', function () {
+    it ('returns number of full years to this date', function() {
+      var mockDate = new Date();
+      mockDate.setFullYear(mockDate.getFullYear() - 47);
+      var retYears = CardiacRisk.computeAgeFromBirthDate(mockDate);
+      expect(retYears).to.equal(47);
+    });
+
+    it ('returns number of years minus this past year', function() {
+      var mockDate = new Date();
+      mockDate.setFullYear(mockDate.getFullYear() - 47);
+
+      if (mockDate.getMonth() === 11) {
+        mockDate.setFullYear(mockDate.getFullYear() + 1);
+        mockDate.setMonth(0);
+      } else {
+        mockDate.setMonth(mockDate.getMonth() + 1);
+      }
+      var retYears = CardiacRisk.computeAgeFromBirthDate(mockDate);
+      expect(retYears).to.equal(46);
+    });
+  });
+
   describe ('processLabsData', function () {
     it ('invokes functions to get lab values and sets the flag to false', function() {
 
@@ -221,43 +244,115 @@ describe ('CardiacRisk', function() {
 
   describe ('getSystolicBloodPressureValue', function() {
     describe('returns given valid SBP in float value', function() {
-      it('when SBP is a valid value in mm[Hg]', function(){
+      it('when SBP is a valid value in mmHg', function(){
         var sbp = [{
-          "valueQuantity" : {
-            value: 106,
-            unit: 'mm[Hg]'
+          component : [{
+            code : {
+              coding : [{
+                code : "8480-6",
+                display : "Systolic Blood Pressure",
+                system : "http://loinc.org"
+              }],
+              text : "Systolic Blood Pressure"
+            },
+            valueQuantity : {
+              code : 'mm[Hg]',
+              value : 106,
+              unit : 'mmHg'
+            }
           },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
-          "status" : 'final'
+            {
+              code : {
+                coding : [{
+                  code : "84830-6",
+                  display : "Systolic Blood Pressure",
+                  system : "http://loinc.org"
+                }],
+                text : "Systolic Blood Pressure"
+              },
+              valueQuantity : {
+                code : 'mm[Hg]',
+                value : 111,
+                unit : 'mmHg'
+              }
+            }],
+          effectiveDateTime : "2016-03-07T18:02:00.000Z",
+          status : 'final'
         }];
         expect(CardiacRisk.getSystolicBloodPressureValue(sbp)).to.equal(106.00);
       });
 
-      it('when SBP is an invalid value in mm[Hg]', function(){
+      it('when SBP is an invalid value in mmHg', function(){
         var sbp = [{
-          "valueQuantity" : {
-            value: 106,
-            unit: 'mmsHg'
-          },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
+          component : [{
+            code : {
+              coding : [{
+                code : "8480-6",
+                display : "Systolic Blood Pressure",
+                system : "http://loinc.org"
+              }],
+              text : "Systolic Blood Pressure"
+            },
+            valueQuantity : {
+              code : 'msm[Hg]',
+              value : 106,
+              unit : 'mmsHg'
+            }
+          }],
+          "effectiveDateTime" : "2016-03-07T18:02:00.000Z",
           "status" : 'final'
         }];
 
         expect(CardiacRisk.getSystolicBloodPressureValue(sbp)).to.equal(undefined);
       });
 
-      it('when SBP is an invalid value in mm[Hg] when getFirstValidDataPointValueFromObservations is mocked', function(){
+      it('when SBP is an invalid value in mmHg when getFirstValidDataPointValueFromObservations is mocked', function(){
         var sbp = [{
-          "valueQuantity" : {
-            value: 106,
-            unit: 'mm[Hg]'
-          },
-          "appliesDateTime" : "2016-03-07T18:02:00.000Z",
-          "status" : 'final'
+          component : [{
+            code : {
+              coding : [{
+                code : "8480-6",
+                display : "Systolic Blood Pressure",
+                system : "http://loinc.org"
+              }],
+              text : "Systolic Blood Pressure"
+            },
+            valueQuantity : {
+              code : 'mm[Hg]',
+              value : 106,
+              unit : 'mmsHg'
+            }
+          }],
+          effectiveDateTime : "2016-03-07T18:02:00.000Z",
+          status : 'final'
         }];
 
+        var expectedSBP = [{
+          component : [{
+            code : {
+              coding : [{
+                code : "8480-6",
+                display : "Systolic Blood Pressure",
+                system : "http://loinc.org"
+              }],
+              text : "Systolic Blood Pressure"
+            },
+            valueQuantity : {
+              code : 'mm[Hg]',
+              value : 106,
+              unit : 'mmsHg'
+            }
+          }],
+          valueQuantity : {
+            code : 'mm[Hg]',
+            value : 106,
+            unit : 'mmsHg'
+          },
+          effectiveDateTime : "2016-03-07T18:02:00.000Z",
+          status : 'final'
+        }];
         var mock = sinonSandbox.mock(CardiacRisk);
-        mock.expects('getFirstValidDataPointValueFromObservations').once().withArgs(sbp).returns(parseFloat(sbp[0].valueQuantity.value));
+        mock.expects('getFirstValidDataPointValueFromObservations').once().withArgs(expectedSBP).returns(parseFloat(expectedSBP[0].valueQuantity.value));
         var response = CardiacRisk.getSystolicBloodPressureValue(sbp);
         expect(response).to.equal(106);
         mock.verify();
@@ -565,57 +660,157 @@ describe ('CardiacRisk', function() {
     });
   });
 
+  describe ('computeTenYearASCVD', function() {
+    describe ('for men', function() {
+      it ('who are white or not African American', function () {
+        var malePatientWhite = setPatientInfo('male',46,150,40,140,true,true,'white',true,CardiacRisk.patientInfo);
+        var malePatientOther = setPatientInfo('male',46,150,40,140,true,true,'other',true,CardiacRisk.patientInfo);
+        assert.equal(12, CardiacRisk.computeTenYearASCVD(malePatientWhite));
+        assert.equal(12, CardiacRisk.computeTenYearASCVD(malePatientOther));
+      });
+
+      it ('who are African American', function() {
+        var malePatientAA = setPatientInfo('male',46,150,40,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(25, CardiacRisk.computeTenYearASCVD(malePatientAA));
+      });
+    });
+
+    describe ('for women', function() {
+      it ('who are white or not African American', function () {
+        var femalePatientWhite = setPatientInfo('female',46,141,34,140,true,true,'white',true,CardiacRisk.patientInfo);
+        var femalePatientOther = setPatientInfo('female',46,141,34,140,true,true,'other',true,CardiacRisk.patientInfo);
+        assert.equal(10, CardiacRisk.computeTenYearASCVD(femalePatientWhite));
+        assert.equal(10, CardiacRisk.computeTenYearASCVD(femalePatientOther));
+      });
+
+      it ('who are African American', function() {
+        var femalePatientAA = setPatientInfo('female',46,141,34,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(27, CardiacRisk.computeTenYearASCVD(femalePatientAA));
+      });
+    });
+  });
+
+  describe ('computeLifetimeRisk', function() {
+    describe ('for invalid patients', function() {
+      it ('who are 19 yrs old or younger', function() {
+        var malePatientAA = setPatientInfo('male',19,150,40,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(null, CardiacRisk.computeLifetimeRisk(malePatientAA, false));
+      });
+
+      it ('who are 60 years old or older', function() {
+        var malePatientAA = setPatientInfo('male',60,150,40,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(null, CardiacRisk.computeLifetimeRisk(malePatientAA, false));
+      });
+    });
+
+    describe ('for valid male patients', function() {
+      it ('with the useOptimal flag set', function () {
+        var malePatientAA = setPatientInfo('male',40,150,40,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(5, CardiacRisk.computeLifetimeRisk(malePatientAA, true));
+      });
+
+      it ('at higher-tiered major risk', function() {
+        var malePatientAA = setPatientInfo('male',40,150,40,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(69, CardiacRisk.computeLifetimeRisk(malePatientAA, false));
+      });
+
+      it ('at lower-tiered major risk', function() {
+        var malePatientAA = setPatientInfo('male',40,150,40,140,false,true,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(50, CardiacRisk.computeLifetimeRisk(malePatientAA, false));
+      });
+
+      it ('at elevated risk', function() {
+        var malePatientAA = setPatientInfo('male',40,150,40,140,false,false,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(46, CardiacRisk.computeLifetimeRisk(malePatientAA, false));
+      });
+
+      it ('at non-optimal risk', function() {
+        var malePatientAA = setPatientInfo('male',40,150,40,120,false,false,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(36, CardiacRisk.computeLifetimeRisk(malePatientAA, false));
+      });
+
+      it ('at all-optimal conditions', function() {
+        var malePatientAA = setPatientInfo('male',40,150,40,110,false,false,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(5, CardiacRisk.computeLifetimeRisk(malePatientAA, false));
+      });
+    });
+
+    describe ('for valid female patients', function() {
+      it ('with the useOptimal flag set', function () {
+        var femalePatientAA = setPatientInfo('female',40,150,40,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(8, CardiacRisk.computeLifetimeRisk(femalePatientAA, true));
+      });
+
+      it ('at higher-tiered major risk', function() {
+        var femalePatientAA = setPatientInfo('female',40,150,40,140,true,true,'aa',true,CardiacRisk.patientInfo);
+        assert.equal(50, CardiacRisk.computeLifetimeRisk(femalePatientAA, false));
+      });
+
+      it ('at lower-tiered major risk', function() {
+        var femalePatientAA = setPatientInfo('female',40,150,40,140,false,true,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(39, CardiacRisk.computeLifetimeRisk(femalePatientAA, false));
+      });
+
+      it ('at elevated risk', function() {
+        var femalePatientAA = setPatientInfo('female',40,150,40,140,false,false,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(39, CardiacRisk.computeLifetimeRisk(femalePatientAA, false));
+      });
+
+      it ('at non-optimal risk', function() {
+        var femalePatientAA = setPatientInfo('female',40,150,40,120,false,false,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(27, CardiacRisk.computeLifetimeRisk(femalePatientAA, false));
+      });
+
+      it ('at all-optimal risk', function() {
+        var femalePatientAA = setPatientInfo('female',40,150,40,110,false,false,'aa',false,CardiacRisk.patientInfo);
+        assert.equal(8, CardiacRisk.computeLifetimeRisk(femalePatientAA, false));
+      });
+    });
+  });
+
   describe ('computeWhatIfSBP', function() {
-    it('it returns valid display text and value if systolic blood pressure is > 129', function(){
-      setPatientInfo('male',59,150,130,40,106,undefined,false,'white',true,CardiacRisk.patientInfo);
+    it('it returns valid display text and value if systolic blood pressure is > 120', function(){
+      setPatientInfo('male',59,150,40,106,false,false,'white',true,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.systolicBloodPressure = 130;
 
       var expectedResponse = {};
-      expectedResponse.value = '5%';
+      expectedResponse.value = '12%';
       expectedResponse.valueText = '120 mm/Hg';
 
-      var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeTenYearASCVD").returns(5);
-
       var functionResponse = CardiacRisk.computeWhatIfSBP();
 
       expect(functionResponse).to.be.an('object');
       expect(functionResponse.value).to.equal(expectedResponse.value);
       expect(functionResponse.valueText).to.equal(expectedResponse.valueText);
-      mock.verify();
     });
 
-    it('it returns valid display text and value if systolic blood pressure is = 120', function(){
-      setPatientInfo('male',59,150,130,40,106,undefined,false,'white',true,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.systolicBloodPressure = 120;
+    it('it returns valid display text and value if systolic blood pressure is = 111', function(){
+      setPatientInfo('male',59,150,40,106,false,false,'white',true,CardiacRisk.patientInfo);
+      CardiacRisk.patientInfo.systolicBloodPressure = 111;
 
       var expectedResponse = {};
-      expectedResponse.value = '6%';
-      expectedResponse.valueText = '119 mm/Hg';
-
-      var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects("computeTenYearASCVD").returns(6);
+      expectedResponse.value = '10%';
+      expectedResponse.valueText = '110 mm/Hg';
 
       var functionResponse = CardiacRisk.computeWhatIfSBP();
 
       expect(functionResponse).to.be.an('object');
       expect(functionResponse.value).to.equal(expectedResponse.value);
       expect(functionResponse.valueText).to.equal(expectedResponse.valueText);
-      mock.verify();
     });
 
-    it('it returns undefined if systolic blood pressure is = 105', function(){
-      setPatientInfo('male',59,150,130,40,106,undefined,false,'white',true,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.systolicBloodPressure = 105;
+    it('it returns undefined if systolic blood pressure is = 90', function(){
+      setPatientInfo('male',59,150,40,106,false,false,'white',true,CardiacRisk.patientInfo);
+      CardiacRisk.patientInfo.systolicBloodPressure = 90;
 
       var functionResponse = CardiacRisk.computeWhatIfSBP();
 
       expect(functionResponse).to.equal(undefined);
     });
 
-    it('it returns undefined if systolic blood pressure is = 119', function(){
-      setPatientInfo('male',59,150,130,40,106,undefined,false,'white',true,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.systolicBloodPressure = 119;
+    it('it returns undefined if systolic blood pressure is = 110', function(){
+      setPatientInfo('male',59,150,40,106,false,false,'white',true,CardiacRisk.patientInfo);
+      CardiacRisk.patientInfo.systolicBloodPressure = 110;
 
       var functionResponse = CardiacRisk.computeWhatIfSBP();
 
@@ -625,35 +820,22 @@ describe ('CardiacRisk', function() {
 
   describe ('computeWhatIfNotSmoker', function() {
     it('it returns valid score for if the patient is not a smoker', function(){
-      setPatientInfo('male',59,160,60,119,false,false,'white',true,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.relatedFactors.smoker = true;
-
-      var patientInfoCopy = $.extend(true, {}, CardiacRisk.patientInfo);
-      patientInfoCopy.relatedFactors.smoker = false;
-
-      var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects('computeTenYearASCVD').once().withExactArgs(patientInfoCopy).returns(6);
+      setPatientInfo('male',59,160,60,119,true,false,'white',false,CardiacRisk.patientInfo);
 
       var functionResponse = CardiacRisk.computeWhatIfNotSmoker();
 
-      expect(functionResponse).to.equal(6);
-
-      mock.verify();
+      expect(functionResponse).to.equal(5);
     });
   });
 
   describe ('computeWhatIfOptimal', function() {
     it('it returns valid score for all optimal values', function(){
-      setPatientInfo('male',59,160,60,119,false,false,'white',true,CardiacRisk.patientInfo);
-
-      var mock = sinonSandbox.mock(CardiacRisk);
-      mock.expects('computeTenYearASCVD').once().withExactArgs(CardiacRisk.patientInfo).returns(6);
+      setPatientInfo('male',59,170,50,110,false,false,'white',false,CardiacRisk.patientInfo);
 
       var functionResponse = CardiacRisk.computeWhatIfOptimal();
 
-      expect(functionResponse).to.equal(6);
+      expect(functionResponse).to.equal(5);
 
-      mock.verify();
     });
   });
 
@@ -734,28 +916,28 @@ describe ('CardiacRisk', function() {
   });
 
   describe ('validateLabsForOutOfBoundsValueErrors', function(){
-    it('returns errorText when totalCholesterol is < 140', function(){
+    it('returns errorText when totalCholesterol is < 130', function(){
       setPatientInfo('male',59,160,60,119,false,false,'white',true,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.totalCholesterol = 139;
+      CardiacRisk.patientInfo.totalCholesterol = 129;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
       expect(functionResponse).to.be.equal('Total Cholesterol levels are too low to return a cardiac risk score.');
     });
 
-    it('returns errorText when totalcholesterol is > 401', function(){
+    it('returns errorText when totalCholesterol is > 320', function(){
       setPatientInfo('male',59,160,60,119,false,false,'white',true,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.totalCholesterol = 402;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
       expect(functionResponse).to.be.equal('Total Cholesterol levels are too high to return a cardiac risk score.');
     });
 
-    it('returns errorText when hdl is < 30', function(){
+    it('returns errorText when hdl is < 20', function(){
       setPatientInfo('male',59,160,60,119,false,false,'white',true,CardiacRisk.patientInfo);
-      CardiacRisk.patientInfo.hdl = 29;
+      CardiacRisk.patientInfo.hdl = 19;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
       expect(functionResponse).to.be.equal('HDL levels are too low to return a cardiac risk score.');
     });
 
-    it('returns errorText when hdl is > 150', function(){
+    it('returns errorText when hdl is > 100', function(){
       setPatientInfo('male',59,160,60,119,false,false,'white',true,CardiacRisk.patientInfo);
       CardiacRisk.patientInfo.hdl = 151;
       var functionResponse = CardiacRisk.patientInfo.validateLabsForOutOfBoundsValueErrors();
@@ -854,7 +1036,6 @@ describe ('CardiacRisk', function() {
 
   describe ('canCalculateASCVDScore', function() {
     it ('returns true if the 5 values are available', function(){
-
       setPatientInfo('male',59,160,60,140,false,false,'white',true,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
@@ -879,7 +1060,79 @@ describe ('CardiacRisk', function() {
     });
 
     it ('returns false if we have undefined smoker status', function(){
-      setPatientInfo('male',59,160,60,undefined,undefined,false,'white',true,CardiacRisk.patientInfo);
+      setPatientInfo('male',59,160,60,140,undefined,false,'white',true,CardiacRisk.patientInfo);
+
+      var mock = sinonSandbox.mock(CardiacRisk);
+      mock.expects("isValidSysBP").once().returns(true);
+
+      var response = CardiacRisk.canCalculateASCVDScore();
+
+      expect(response).to.be.equal(false);
+      mock.verify();
+    });
+
+    it ('returns false if we have undefined hypertension status', function(){
+      setPatientInfo('male',59,160,60,140,false,undefined,'white',true,CardiacRisk.patientInfo);
+
+      var mock = sinonSandbox.mock(CardiacRisk);
+      mock.expects("isValidSysBP").once().returns(true);
+
+      var response = CardiacRisk.canCalculateASCVDScore();
+
+      expect(response).to.be.equal(false);
+      mock.verify();
+    });
+
+    it ('returns false if we have undefined race status', function(){
+      setPatientInfo('male',59,160,60,140,false,false,undefined,true,CardiacRisk.patientInfo);
+
+      var mock = sinonSandbox.mock(CardiacRisk);
+      mock.expects("isValidSysBP").once().returns(true);
+
+      var response = CardiacRisk.canCalculateASCVDScore();
+
+      expect(response).to.be.equal(false);
+      mock.verify();
+    });
+
+    it ('returns false if we have undefined diabetes status', function(){
+      setPatientInfo('male',59,160,60,140,false,false,'white',undefined,CardiacRisk.patientInfo);
+
+      var mock = sinonSandbox.mock(CardiacRisk);
+      mock.expects("isValidSysBP").once().returns(true);
+
+      var response = CardiacRisk.canCalculateASCVDScore();
+
+      expect(response).to.be.equal(false);
+      mock.verify();
+    });
+
+    it ('returns false if we have undefined hypertensive status', function(){
+      setPatientInfo('male',59,160,60,140,false,undefined,'white',true,CardiacRisk.patientInfo);
+
+      var mock = sinonSandbox.mock(CardiacRisk);
+      mock.expects("isValidSysBP").once().returns(true);
+
+      var response = CardiacRisk.canCalculateASCVDScore();
+
+      expect(response).to.be.equal(false);
+      mock.verify();
+    });
+
+    it ('returns false if we have undefined race status', function(){
+      setPatientInfo('male',59,160,60,140,false,false,undefined,true,CardiacRisk.patientInfo);
+
+      var mock = sinonSandbox.mock(CardiacRisk);
+      mock.expects("isValidSysBP").once().returns(true);
+
+      var response = CardiacRisk.canCalculateASCVDScore();
+
+      expect(response).to.be.equal(false);
+      mock.verify();
+    });
+
+    it ('returns false if we have undefined diabetes status', function(){
+      setPatientInfo('male',59,160,60,140,false,false,'white',undefined,CardiacRisk.patientInfo);
 
       var mock = sinonSandbox.mock(CardiacRisk);
       mock.expects("isValidSysBP").once().returns(true);
@@ -938,12 +1191,12 @@ describe ('CardiacRisk', function() {
   });
 
   describe ('isValidSysBP', function(){
-    it ('returns true if the systolic BP is not undefined and = 105', function(){
-      var response = CardiacRisk.isValidSysBP(105);
+    it ('returns true if the systolic BP is not undefined and = 90', function(){
+      var response = CardiacRisk.isValidSysBP(90);
       expect(response).to.be.equal(true);
     });
 
-    it ('returns true if the systolic BP is not undefined and >= 105 and <=200', function(){
+    it ('returns true if the systolic BP is not undefined and >= 90 and <= 200', function(){
       var response = CardiacRisk.isValidSysBP(110);
       expect(response).to.be.equal(true);
     });
@@ -963,8 +1216,8 @@ describe ('CardiacRisk', function() {
       expect(functionResponse).to.be.equal(false);
     });
 
-    it('it returns false for if the systolic blood pressure is < 105', function() {
-      var functionResponse = CardiacRisk.isValidSysBP(104);
+    it('it returns false for if the systolic blood pressure is < 90', function() {
+      var functionResponse = CardiacRisk.isValidSysBP(89);
       expect(functionResponse).to.be.equal(false);
     });
 
@@ -991,6 +1244,7 @@ describe ('CardiacRisk', function() {
       var functionResponse = CardiacRisk.optimalLabs();
       expect(functionResponse).to.be.equal(true);
     });
+
     it('it returns true if the lab values are optimal with hdl <= 150', function() {
       setPatientInfo('male',59,160,150,119,false,false,'white',true,CardiacRisk.patientInfo);
       var functionResponse = CardiacRisk.optimalLabs();
@@ -1027,7 +1281,6 @@ describe ('CardiacRisk', function() {
     });
 
     it('returns errorText for gender with Capital Letters', function(){
-
       setPatientInfo('MALE',59,160,60,119,false,false,'white',true,CardiacRisk.patientInfo);
 
       var functionResponse = CardiacRisk.validateModelForErrors();

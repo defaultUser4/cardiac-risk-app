@@ -308,7 +308,7 @@
 
   function updateASCVDRiskEstimates() {
     var tenYearASCVDScore = CardiacRisk.computeTenYearASCVD(CardiacRisk.patientInfo);
-    var tenYearASCVDOptimalScore = CardiacRisk.computeOptimalASCVD();
+    var tenYearASCVDOptimalScore = CardiacRisk.computeWhatIfOptimal();
     var lifetimeASCVDScore = CardiacRisk.computeLifetimeRisk(CardiacRisk.patientInfo, false);
     var lifetimeASCVDOptimalScore = CardiacRisk.computeLifetimeRisk(CardiacRisk.patientInfo, true);
 
@@ -327,7 +327,7 @@
       $('#lifetimeASCVDOptimalEstimate').addClass('contentHidden');
     } else {
       $('#lifetimeASCVDEstimate').text('Lifetime ASCVD Risk Estimate: ' + lifetimeASCVDScore + '%');
-      $('#lifetimeASCVDOptimalEstimate').text('Lifetime ASCVD Risk Estimate (optimal conditions): ' +
+      $('#lifetimeASCVDOptimalEstimate').text('Lifetime ASCVD Risk Estimate (optimal): ' +
           lifetimeASCVDOptimalScore + '%');
     }
   }

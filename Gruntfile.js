@@ -21,6 +21,7 @@ module.exports = function (grunt) {
           'build/js/cardiac_risk.js': [
             'src/js/cardiac_risk.js',
             'src/js/cardiac_risk_controller.js',
+            'src/js/cardiac_risk_polyfill.js',
             'src/js/static_range_slider.js',
             'src/js/static_range_slider_controller.js'
           ]

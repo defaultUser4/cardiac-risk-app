@@ -46,8 +46,8 @@
                     query: {
                         code: {
                             $or: ['http://loinc.org|14647-2', 'http://loinc.org|2093-3',
-                                'http://loinc.org|2085-9', 'http://loinc.org|8480-6',
-                                'http://loinc.org|55284-4'
+                                  'http://loinc.org|2085-9', 'http://loinc.org|8480-6',
+                                  'http://loinc.org|55284-4'
                             ]
                         }
                     }
@@ -361,13 +361,13 @@
     var computeWhatIfSBP = function () {
         var whatIfSBP = {};
         var patientInfoCopy = $.extend(true, {}, CardiacRisk.patientInfo);
-        if (patientInfoCopy.systolicBloodPressure >= 129) {
+        if (patientInfoCopy.systolicBloodPressure >= 120) {
             patientInfoCopy.systolicBloodPressure = patientInfoCopy.systolicBloodPressure - 10;
         }
-        else if (patientInfoCopy.systolicBloodPressure >= 120 && patientInfoCopy.systolicBloodPressure <129) {
-            patientInfoCopy.systolicBloodPressure = 119;
+        else if (patientInfoCopy.systolicBloodPressure >= 111 && patientInfoCopy.systolicBloodPressure < 120) {
+            patientInfoCopy.systolicBloodPressure = 110;
         }
-        else if (patientInfoCopy.systolicBloodPressure >= 105 && patientInfoCopy.systolicBloodPressure < 120) {
+        else if (patientInfoCopy.systolicBloodPressure >= 90 && patientInfoCopy.systolicBloodPressure < 111) {
             return undefined;
         }
 
@@ -395,10 +395,13 @@
      */
     var computeWhatIfOptimal = function () {
         var patientInfoCopy = $.extend(true, {}, CardiacRisk.patientInfo);
-        patientInfoCopy.totalCholesterol = 160;
-        patientInfoCopy.hdl = 60;
-        patientInfoCopy.systolicBloodPressure = 119;
+        patientInfoCopy.totalCholesterol = 170;
+        patientInfoCopy.hdl = 50;
+        patientInfoCopy.systolicBloodPressure = 110;
+        patientInfoCopy.relatedFactors.hypertensive = false;
+        patientInfoCopy.relatedFactors.diabetic = false;
         patientInfoCopy.relatedFactors.smoker = false;
+
         return CardiacRisk.computeTenYearASCVD(patientInfoCopy);
     };
     CardiacRisk.computeWhatIfOptimal = computeWhatIfOptimal;
@@ -466,16 +469,16 @@
     var validateLabsForOutOfBoundsValueErrors = function () {
         var errorText = '';
 
-        if (CardiacRisk.patientInfo.totalCholesterol < 140) {
+        if (CardiacRisk.patientInfo.totalCholesterol < 130) {
             errorText = 'Total Cholesterol levels are too low to return a cardiac risk score.';
         }
-        else if (CardiacRisk.patientInfo.totalCholesterol > 401) {
+        else if (CardiacRisk.patientInfo.totalCholesterol > 320) {
             errorText = 'Total Cholesterol levels are too high to return a cardiac risk score.';
         }
-        else if (CardiacRisk.patientInfo.hdl < 30) {
+        else if (CardiacRisk.patientInfo.hdl < 20) {
             errorText = 'HDL levels are too low to return a cardiac risk score.';
         }
-        else if (CardiacRisk.patientInfo.hdl > 150) {
+        else if (CardiacRisk.patientInfo.hdl > 100) {
             errorText = 'HDL levels are too high to return a cardiac risk score.';
         }
         return errorText;
@@ -585,7 +588,7 @@
      */
     var isValidSysBP = function (currentSysBP) {
 
-        if (!isNaN(currentSysBP) && currentSysBP !== undefined && currentSysBP >=105 && currentSysBP <=200) {
+        if (!isNaN(currentSysBP) && currentSysBP !== undefined && currentSysBP >=90 && currentSysBP <=200) {
             return true;
         }
         return false;

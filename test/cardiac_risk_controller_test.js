@@ -36,7 +36,7 @@ describe ('CardiacRiskController', function() {
       expect(updatedPatientName.innerHTML).to.equal('John Doe');
       expect(updatedPatientAge.innerHTML).to.equal('59yrs');
       expect(updatedPatientGender.innerHTML).to.equal('M');
-      expect(updatedPatientDOB.innerHTML).to.equal('5/22/2016');
+      expect(updatedPatientDOB.innerHTML).to.equal('6/22/2016');
 
     });
 
@@ -74,7 +74,7 @@ describe ('CardiacRiskController', function() {
       expect(updatedPatientName.innerHTML).to.equal('John Doe');
       expect(updatedPatientAge.innerHTML).to.equal('59yrs');
       expect(updatedPatientGender.innerHTML).to.equal('F');
-      expect(updatedPatientDOB.innerHTML).to.equal('5/22/2016');
+      expect(updatedPatientDOB.innerHTML).to.equal('6/22/2016');
 
     });
   });
@@ -160,8 +160,8 @@ describe ('CardiacRiskController', function() {
   });
 
   describe('checkForIncompleteState', function(){
-    it('sets UI elements for invalid sbp', function(){
-      CardiacRisk.patientInfo = setPatientInfo('male',59,160,60,undefined,false,'white',true, CardiacRisk.patientInfo);
+    it('sets UI elements for incomplete state with sbp', function(){
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,60,130,undefined,'white',true, CardiacRisk.patientInfo);
 
       var resultsInfo = document.createElement('div');
       resultsInfo.id = 'resultsInfo';
@@ -208,6 +208,11 @@ describe ('CardiacRiskController', function() {
       horizontalRule.className = 'abc';
       document.body.appendChild(horizontalRule);
 
+      var sbpInput = document.createElement('INPUT');
+      sbpInput.id = 'sbpInput';
+      sbpInput.setAttribute('type', 'text');
+      document.body.appendChild(sbpInput);
+
       checkForIncompleteState();
 
       var updatedResultsInfo = document.getElementById('resultsInfo');
@@ -232,8 +237,8 @@ describe ('CardiacRiskController', function() {
 
     });
 
-    it('sets UI elements for valid sbp', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,160,60,119,false,false,'white',true, CardiacRisk.patientInfo);
+    it('sets UI elements for invalid sbp', function() {
+      CardiacRisk.patientInfo = setPatientInfo('male',59,160,60,undefined,false,false,'white',true, CardiacRisk.patientInfo);
 
       var sbpInput = document.createElement('INPUT');
       sbpInput.id = 'sbpInput';
@@ -243,7 +248,7 @@ describe ('CardiacRiskController', function() {
       checkForIncompleteState();
 
       var updatedSbpInput = document.getElementById('sbpInput');
-      expect(updatedSbpInput.value).to.be.equal('119');
+      expect(updatedSbpInput.value).to.be.equal('');
     });
   });
 
@@ -383,6 +388,7 @@ describe ('CardiacRiskController', function() {
       mockWindow.expects('updateUIWhatIfSystolicBloodPressure').once();
       mockWindow.expects('updateUIWhatIfNotSmoker').once();
       mockWindow.expects('updateUIWhatIfOptimalValues').once();
+      mockWindow.expects('updateASCVDRiskEstimates').once();
       mockWindow.expects('adjustRelatedFactorsSize').once();
 
       updateUI();
@@ -601,6 +607,83 @@ describe ('CardiacRiskController', function() {
       mock.verify();
     });
 
+  });
+
+  describe ('updateASCVDRiskEstimates', function() {
+    beforeEach(function() {
+      var tenYearEstimate = document.createElement('div');
+      tenYearEstimate.id = 'tenYearASCVDEstimate';
+      document.body.appendChild(tenYearEstimate);
+
+      var tenYearOptimalEstimate = document.createElement('div');
+      tenYearOptimalEstimate.id = 'tenYearASCVDOptimalEstimate';
+      document.body.appendChild(tenYearOptimalEstimate);
+
+      var lifeEstimate = document.createElement('div');
+      lifeEstimate.id = 'lifetimeASCVDEstimate';
+      document.body.appendChild(lifeEstimate);
+
+      var lifeOptimalEstimate = document.createElement('div');
+      lifeOptimalEstimate.id = 'lifetimeASCVDOptimalEstimate';
+      document.body.appendChild(lifeOptimalEstimate);
+    });
+
+    describe ('when ASCVD scores are null', function() {
+      it ('displays an appropriate message', function() {
+        CardiacRisk.patientInfo = {};
+
+        var mock = sinonSandbox.mock(CardiacRisk);
+        mock.expects("computeTenYearASCVD").returns(null);
+        mock.expects("computeWhatIfOptimal").returns(null);
+        mock.expects("computeLifetimeRisk").returns(null);
+        mock.expects("computeLifetimeRisk").returns(null);
+
+        updateASCVDRiskEstimates();
+
+        var tenYearMessage = document.getElementById('tenYearASCVDEstimate');
+        expect(tenYearMessage.innerHTML).to.be.equal('ASCVD 10-year Risk Estimate can only be ' +
+            'computed for those in the age range of 20-79');
+
+        var tenYearOptimalMessage = document.getElementById('tenYearASCVDOptimalEstimate');
+        expect(tenYearOptimalMessage.innerHTML).to.be.equal('ASCVD 10-year Risk Estimate can only be ' +
+            'computed for those in the age range of 20-79');
+
+        var lifetimeMessage = document.getElementById('lifetimeASCVDEstimate');
+        expect(lifetimeMessage.className).to.be.equal('contentHidden');
+
+        var lifetimeOptimalMessage = document.getElementById('lifetimeASCVDOptimalEstimate');
+        expect(lifetimeOptimalMessage.className).to.be.equal('contentHidden');
+
+        mock.verify();
+      });
+    });
+
+    describe ('when ASCVD scores are not null', function() {
+      it ('displays scores and appropriate messages', function() {
+        CardiacRisk.patientInfo = {};
+
+        var mock = sinonSandbox.mock(CardiacRisk);
+        mock.expects("computeTenYearASCVD").returns(50);
+        mock.expects("computeWhatIfOptimal").returns(30);
+        mock.expects("computeLifetimeRisk").returns(60);
+        mock.expects("computeLifetimeRisk").returns(20);
+
+        updateASCVDRiskEstimates();
+
+        var tenYearMessage = document.getElementById('tenYearASCVDEstimate');
+        expect(tenYearMessage.innerHTML).to.be.equal('ASCVD 10-year: ' + 50 + '%');
+
+        var tenYearOptimalMessage = document.getElementById('tenYearASCVDOptimalEstimate');
+        expect(tenYearOptimalMessage.innerHTML).to.be.equal('ASCVD 10-year (optimal): ' + 30 + '%');
+
+        var lifetimeMessage = document.getElementById('lifetimeASCVDEstimate');
+        expect(lifetimeMessage.innerHTML).to.be.equal('Lifetime ASCVD Risk Estimate: ' + 60 + '%');
+
+        var lifetimeOptimalMessage = document.getElementById('lifetimeASCVDOptimalEstimate');
+        expect(lifetimeOptimalMessage.innerHTML).to.be.equal('Lifetime ASCVD Risk Estimate ' +
+            '(optimal): ' + 20 + '%');
+      });
+    });
   });
 
   describe ('updateUIWhatIfSystolicBloodPressure', function() {
