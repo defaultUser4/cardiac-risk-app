@@ -1,7 +1,7 @@
 describe('StaticRangeSlider', function() {
 	describe('buildRangeSliderDataModel', function(){
 		it('returns a data model built for range slider when gender is male', function(){
-			CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,100,60,119,false,false);
+			CardiacRisk.patientInfo = setPatientInfo('male',59,100,60,119,false,false,'white',true, CardiacRisk.patientInfo);
 			buildRangeSliderDataModel();
 
 			expect(CardiacRisk.graphData).to.be.an('object');
@@ -35,7 +35,7 @@ describe('StaticRangeSlider', function() {
 		});
 
 		it('returns a data model built for range slider when gender is female', function(){
-			CardiacRisk.patientInfo = setPatientInfo('female',59,0.5,100,60,119,false,false);
+			CardiacRisk.patientInfo = setPatientInfo('female',59,100,60,119,false,false,'white',true, CardiacRisk.patientInfo);
 			buildRangeSliderDataModel();
 
 			expect(CardiacRisk.graphData).to.be.an('object');
