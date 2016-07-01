@@ -73,6 +73,18 @@ module.exports = function (grunt) {
           'build/stylesheets/cardiac_risk.css': ['src/stylesheets/cardiac_risk.css']
         }
       }
+    },
+
+    'gh-pages': {
+      options: {
+        add: true,
+        user: {
+          name: 'Zach Plata',
+          email: 'plata.zach@gmail.com'
+        },
+        move: [{base: 'build', src: '**/*', dest: 'build'}]
+      },
+      src: ['build/**/*', 'index.html', 'launch.html', '.gitignore', 'README.md', 'images/*']
     }
 
   });
@@ -82,5 +94,7 @@ module.exports = function (grunt) {
   grunt.registerTask('test', ['mocha_phantomjs']);
 
   grunt.registerTask('build', ['less', 'cssmin', 'concat', 'jshint', 'uglify']);
+
+  grunt.registerTask('push', ['gh-pages']);
 
 };
