@@ -6,6 +6,10 @@ For our model of an improved Reynolds Risk Score reporting SMART App, we took an
 App Design:
 ![Sample App Design Screen Shot](CardiacRiskApp.png)
 
+# Try the App #
+
+You can choose from a list of patients and [run the app here](http://cerner.github.io/cardiac-risk-app/landing.html).
+
 # Running Locally #
 
 In order to run the Cardiac Risk app locally, you need to run a local webserver.
