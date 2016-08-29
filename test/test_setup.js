@@ -8,7 +8,7 @@ afterEach(function () {
 	sinonSandbox.restore();
 });
 
-var setPatientInfo = function(gender,age,totCholesterol,ldl,hdl,sysBP,smoker,familyHistory,patientInfo) {
+var setPatientInfo = function(gender,age,totCholesterol,hdl,sysBP,smoker,familyHistory,patientInfo) {
 	if (patientInfo === undefined) patientInfo = {};
 	patientInfo.firstName = 'John';
 	patientInfo.lastName = 'Doe';
@@ -17,7 +17,6 @@ var setPatientInfo = function(gender,age,totCholesterol,ldl,hdl,sysBP,smoker,fam
 
 	patientInfo.totalCholesterol = totCholesterol;
 	patientInfo.hdl = hdl;
-	patientInfo.ldl = ldl;
 
 	patientInfo.systolicBloodPressure = sysBP;
 	var relatedFactors = {};

@@ -432,8 +432,7 @@
   flex-direction: column;
   -ms-flex-wrap: nowrap;
   -webkit-flex-wrap: nowrap;
-  flex-wrap: nowrap
-
+  flex-wrap: nowrap;
   position: relative;
   margin: 0;
 }
@@ -646,10 +645,6 @@ input[type="text"] {
 }
 .tooltipsterCardiacRiskTotalCholesterol {
   height: 61px;
-  width: 100%;
-}
-.tooltipsterCardiacRiskLDL {
-  height: 104px;
   width: 100%;
 }
 .tooltipsterCardiacRiskHDL {

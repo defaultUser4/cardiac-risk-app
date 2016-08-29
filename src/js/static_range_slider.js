@@ -21,24 +21,6 @@ function buildRangeSliderDataModel() {
 	};
 	graphData.totalCholesterolSliderData = totalCholesterolSliderData;
 
-	if (CardiacRisk.patientInfo.ldl !== undefined) {
-		var ldlSliderData = {};
-		ldlSliderData.id = 'ldlBadCholesterolSlider';
-		ldlSliderData.titleLeft = 'LDL "Bad" Cholesterol';
-		ldlSliderData.titleRight = 'mg/dL';
-		ldlSliderData.lowerBound = 50;
-		ldlSliderData.upperBound = 210;
-		ldlSliderData.barBoundsLowDisplay = 'Optimal';
-		ldlSliderData.barBoundsHighDisplay = 'High';
-		ldlSliderData.toolTipData = {
-			'keys' : ['Optimal', 'Near/Above Optimal', 'Borderline High', 'High', 'Very High'],
-			'values': ['50 - 100', '101 - 129', '130 - 159', '160 - 189', '190 - 210'],
-			'styleClass': 'tooltipsterCardiacRiskLDL'
-		};
-		ldlSliderData.barHeight = 6;
-		graphData.ldlSliderData = ldlSliderData;
-	}
-
 	var hdlSliderData = {};
 	hdlSliderData.id = 'hdlGoodCholesterolSlider';
 	hdlSliderData.titleLeft = 'HDL "Good" Cholesterol';

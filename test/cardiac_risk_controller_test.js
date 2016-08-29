@@ -750,7 +750,6 @@ describe ('CardiacRiskController', function() {
       var mockWindow = sinonSandbox.mock(window);
       mockWindow.expects('buildRangeSliderDataModel').once();
       mockWindow.expects('createCholesterolSlider').once();
-      mockWindow.expects('createLDLSlider').once();
       mockWindow.expects('createHDLSlider').once();
       createRangeSliderGraphs();
       mockWindow.verify();
@@ -805,124 +804,6 @@ describe ('CardiacRiskController', function() {
 
       expect(CardiacRisk.graphData.totalCholesterolSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.totalCholesterolSliderData.toolTipData.keys[2]);
       expect(CardiacRisk.graphData.totalCholesterolSliderData.value).to.equal(300);
-
-      mockWindow.verify();
-    });
-  });
-
-  describe ('createLDLSlider', function() {
-    it ('invokes internal functions to create the slider ldl < 100', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,160,90,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.ldlSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.lowRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, '');
-      createLDLSlider();
-
-      expect(CardiacRisk.graphData.ldlSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.ldlSliderData.toolTipData.keys[0]);
-      expect(CardiacRisk.graphData.ldlSliderData.value).to.equal(90);
-
-      mockWindow.verify();
-    });
-
-    it ('invokes internal functions to create the slider ldl >= 100 && ldl < 130', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,210,110,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.ldlSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.lowModerateRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, '');
-      createLDLSlider();
-
-      expect(CardiacRisk.graphData.ldlSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.ldlSliderData.toolTipData.keys[1]);
-      expect(CardiacRisk.graphData.ldlSliderData.value).to.equal(110);
-
-      mockWindow.verify();
-    });
-
-    it ('invokes internal functions to create the slider ldl >= 130 && ldl < 160', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,300,140,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.ldlSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.moderateRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, '');
-      createLDLSlider();
-
-      expect(CardiacRisk.graphData.ldlSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.ldlSliderData.toolTipData.keys[2]);
-      expect(CardiacRisk.graphData.ldlSliderData.value).to.equal(140);
-
-      mockWindow.verify();
-    });
-
-    it ('invokes internal functions to create the slider ldl >= 160 && ldl < 190', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,300,180,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.ldlSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.highRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.rangeSliderThumbWhiteText);
-      createLDLSlider();
-
-      expect(CardiacRisk.graphData.ldlSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.ldlSliderData.toolTipData.keys[3]);
-      expect(CardiacRisk.graphData.ldlSliderData.value).to.equal(180);
-
-      mockWindow.verify();
-    });
-
-    it ('invokes internal functions to create the slider ldl >= 190', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,300,200,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').once().withExactArgs(CardiacRisk.graphData.ldlSliderData);
-      mockWindow.expects('changeBarBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-      mockWindow.expects('changeThumbBackgroundColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.highRisk);
-      mockWindow.expects('changeThumbTextColor').once().withExactArgs(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.rangeSliderThumbWhiteText);
-      createLDLSlider();
-
-      expect(CardiacRisk.graphData.ldlSliderData.thumbDisplayText).to.equal(CardiacRisk.graphData.ldlSliderData.toolTipData.keys[4]);
-      expect(CardiacRisk.graphData.ldlSliderData.value).to.equal(200);
-
-      mockWindow.verify();
-    });
-
-    it ('updates UI to hide the LDL graph when  ldl is undefined', function() {
-      CardiacRisk.patientInfo = setPatientInfo('male',59,300,undefined,60,119,false,false);
-      buildRangeSliderDataModel();
-
-      var contentLdlBadCholesterolSlider = document.createElement('header');
-      contentLdlBadCholesterolSlider.id = 'ldlBadCholesterolSlider';
-      contentLdlBadCholesterolSlider.className = 'abc';
-      document.body.appendChild(contentLdlBadCholesterolSlider);
-
-      var contentRangeSlidersVerticalLine = document.createElement('header');
-      contentRangeSlidersVerticalLine.id = 'rangeSlidersVerticalLine';
-      contentRangeSlidersVerticalLine.className = 'abc';
-      document.body.appendChild(contentRangeSlidersVerticalLine);
-
-      var mockWindow = sinonSandbox.mock(window);
-      mockWindow.expects('generateRangeSlider').never();
-      mockWindow.expects('changeBarBackgroundColor').never();
-      mockWindow.expects('changeThumbBackgroundColor').never();
-      mockWindow.expects('changeThumbTextColor').never();
-
-      createLDLSlider();
-
-      var updatedLdlBadCholesterolSlider = document.getElementById('ldlBadCholesterolSlider');
-      expect(updatedLdlBadCholesterolSlider.className).to.be.equal('abc contentHidden');
-
-      var updatedRangeSlidersVerticalLine = document.getElementById('rangeSlidersVerticalLine');
-      expect(updatedRangeSlidersVerticalLine.className).to.be.equal('verticalLineHalf');
 
       mockWindow.verify();
     });
@@ -1066,12 +947,6 @@ describe ('CardiacRiskController', function() {
       totalCholesterolSliderData.lowerBound = 'data_lowerbound_chol';
       totalCholesterolSliderData.upperBound = 'data_upperbound_chol';
 
-      var ldlSliderData = {};
-      ldlSliderData.id = 'data_id_ldl';
-      ldlSliderData.value = 'data_value_ldl';
-      ldlSliderData.lowerBound = 'data_lowerbound_ldl';
-      ldlSliderData.upperBound = 'data_upperbound_ldl';
-
       var hdlSliderData = {};
       hdlSliderData.id = 'data_id_hdl';
       hdlSliderData.value = 'data_value_hdl';
@@ -1079,13 +954,11 @@ describe ('CardiacRiskController', function() {
       hdlSliderData.upperBound = 'data_upperbound_hdl';
 
       CardiacRisk.graphData.totalCholesterolSliderData = totalCholesterolSliderData;
-      CardiacRisk.graphData.ldlSliderData = ldlSliderData;
       CardiacRisk.graphData.hdlSliderData = hdlSliderData;
 
       var mockWindow = sinonSandbox.mock(window);
       mockWindow.expects('updateThumbPosition').once().withExactArgs('data_id','data_value','data_lowerbound','data_upperbound');
       mockWindow.expects('updateThumbPosition').once().withExactArgs('data_id_chol','data_value_chol','data_lowerbound_chol','data_upperbound_chol');
-      mockWindow.expects('updateThumbPosition').once().withExactArgs('data_id_ldl','data_value_ldl','data_lowerbound_ldl','data_upperbound_ldl');
       mockWindow.expects('updateThumbPosition').once().withExactArgs('data_id_hdl','data_value_hdl','data_lowerbound_hdl','data_upperbound_hdl');
       adjustRangeSliderThumbPosition();
       mockWindow.verify();

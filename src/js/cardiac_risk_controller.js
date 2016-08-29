@@ -66,12 +66,12 @@
   }
 
   /**
-   * Checks for the validity of available parameters to calculate the RRS.
+   * Checks for the validity of available parameters to calculate the ASCVD risk.
    * This method will display an Incomplete state UI at the beginning of the app since the availability of
    * patients related factors is unknown.
    */
   function checkForIncompleteState() {
-    if (!CardiacRisk.canCalculateCardiacRiskScore()) {
+    if (!CardiacRisk.canCalculateASCVDScore()) {
       $('#resultsInfo').removeClass('contentHidden');
       $('#resultsSliders').removeClass('contentHidden');
       $('#riskBar').removeClass().addClass('riskBarIncomplete');
@@ -82,10 +82,8 @@
       $('#whatIfContainer').removeClass().addClass('contentHidden');
       $('#horizontalRule').removeClass().addClass('contentHidden');
     }
-    else
-    {
       $('#sbpInput').val(CardiacRisk.patientInfo.systolicBloodPressure);
-    }
+    onSBPInput();
   }
 
   /**
@@ -145,7 +143,7 @@
     $('#sbpInput').keypress(function(event) {return isNumberKey(event);});
     $('#sbpInput').on('focusout', sbpInputFocusOutHandler);
     $('[name="smoker"]').change(onSmokerInput);
-    $('[name="hypertension"]').change(onHypertensionInput);
+    $('[name="hypertensive"]').change(onHypertensiveInput);
     $('[name="race"]').change(onRaceInput);
     $('[name="diabetic"]').change(onDiabeticInput);
   }
@@ -155,7 +153,7 @@
    * This method will check for :
    *    1. valid systolic blood pressure value
    *    2. update the CardiacRisk data model
-   *    3. update UI if the RRS can be calculated.
+   *    3. update UI if the ASCVD risk can be calculated.
    */
   function onSBPInput() {
     var systolicBPValue = parseFloat(document.getElementById('sbpInput').value);
@@ -167,7 +165,7 @@
       $('#asteriskSBP').removeClass().addClass('contentHidden');
       $('#sbpInput').val(systolicBPValue);
 
-      if (CardiacRisk.canCalculateCardiacRiskScore()) {
+      if (CardiacRisk.canCalculateASCVDScore()) {
         updateUI();
       }
     }
@@ -205,26 +203,26 @@
       'heart disease risk low!');
     }
 
-    if (CardiacRisk.canCalculateCardiacRiskScore()) {
+    if (CardiacRisk.canCalculateASCVDScore()) {
       updateUI();
     }
   }
 
   /**
-   * Event listener method for the hypertension status radio button value change.
+   * Event listener method for the hypertensive status radio button value change.
    */
-  function onHypertensionInput() {
-    if (CardiacRisk.patientInfo.relatedFactors.hypertension === undefined) {
+  function onHypertensiveInput() {
+    if (CardiacRisk.patientInfo.relatedFactors.hypertensive === undefined) {
       $('#legendHypertensionError').toggleClass('relatedFactorsErrors relatedFactorsErrorsHidden');
       $('#asteriskHypertension').removeClass().addClass('contentHidden');
     }
 
     if ($(this).val() === 'yes') {
-      // Save the user viewed hypertension condition value in our dataObject for future references.
-      CardiacRisk.patientInfo.relatedFactors.hypertension = true;
+      // Save the user viewed hypertensive condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.hypertensive = true;
     } else {
-      // Save the user viewed hypertension condition value in our dataObject for future references.
-      CardiacRisk.patientInfo.relatedFactors.hypertension = false;
+      // Save the user viewed hypertensive condition value in our dataObject for future references.
+      CardiacRisk.patientInfo.relatedFactors.hypertensive = false;
     }
 
     if (CardiacRisk.canCalculateASCVDScore()) {
@@ -279,7 +277,7 @@
   }
 
   /**
-   * Method to update the UI for cardiac risk score based on the RRS calculation.
+   * Method to update the UI for cardiac risk score based on the ASCVD risk estimation.
    * Updates components:
    *    1. Risk Description
    *    2. Risk Bar
@@ -316,9 +314,9 @@
 
     if (tenYearASCVDScore === null || tenYearASCVDOptimalScore === null) {
       $('#tenYearASCVDEstimate').text('ASCVD 10-year Risk Estimate can only be computed for those in the age' +
-          ' range of 40-79');
+          ' range of 20-79');
       $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year Risk Estimate can only be computed for those in the age' +
-          ' range of 40-79');
+          ' range of 20-79');
     } else {
       $('#tenYearASCVDEstimate').text('ASCVD 10-year: ' + tenYearASCVDScore + '%');
       $('#tenYearASCVDOptimalEstimate').text('ASCVD 10-year (optimal): ' + tenYearASCVDOptimalScore + '%');
@@ -381,7 +379,6 @@
   function createRangeSliderGraphs() {
     buildRangeSliderDataModel();
     createCholesterolSlider();
-    createLDLSlider();
     createHDLSlider();
   }
 
@@ -413,52 +410,6 @@
 
     changeThumbBackgroundColor(CardiacRisk.graphData.totalCholesterolSliderData.id, thumbBackgroundColor);
     changeThumbTextColor(CardiacRisk.graphData.totalCholesterolSliderData.id, thumbTextColor);
-  }
-
-  /**
-   * Method to create the LDL slider based on the ldl value from the
-   * Cardiac Risk data model.
-   */
-  function createLDLSlider() {
-    if (CardiacRisk.patientInfo.ldl === undefined)
-    {
-      $('#ldlBadCholesterolSlider').addClass('contentHidden');
-      $('#rangeSlidersVerticalLine').removeClass().addClass('verticalLineHalf');
-    }
-    else
-    {
-      var thumbDisplayText = '', thumbBackgroundColor = '', thumbTextColor = '';
-      if (CardiacRisk.patientInfo.ldl < 100) {
-        thumbDisplayText = CardiacRisk.graphData.ldlSliderData.toolTipData.keys[0];
-        thumbBackgroundColor = CardiacRisk.colorClasses.lowRisk;
-      }
-      else if (CardiacRisk.patientInfo.ldl >= 100 && CardiacRisk.patientInfo.ldl < 130) {
-        thumbDisplayText = CardiacRisk.graphData.ldlSliderData.toolTipData.keys[1];
-        thumbBackgroundColor = CardiacRisk.colorClasses.lowModerateRisk;
-      }
-      else if (CardiacRisk.patientInfo.ldl >= 130 && CardiacRisk.patientInfo.ldl < 160) {
-        thumbDisplayText = CardiacRisk.graphData.ldlSliderData.toolTipData.keys[2];
-        thumbBackgroundColor = CardiacRisk.colorClasses.moderateRisk;
-      }
-      else if (CardiacRisk.patientInfo.ldl >= 160 && CardiacRisk.patientInfo.ldl < 190) {
-        thumbDisplayText = CardiacRisk.graphData.ldlSliderData.toolTipData.keys[3];
-        thumbBackgroundColor = CardiacRisk.colorClasses.highRisk;
-        thumbTextColor = CardiacRisk.colorClasses.rangeSliderThumbWhiteText;
-      }
-      else if (CardiacRisk.patientInfo.ldl >= 190) {
-        thumbDisplayText = CardiacRisk.graphData.ldlSliderData.toolTipData.keys[4];
-        thumbBackgroundColor = CardiacRisk.colorClasses.highRisk;
-        thumbTextColor = CardiacRisk.colorClasses.rangeSliderThumbWhiteText;
-      }
-
-      CardiacRisk.graphData.ldlSliderData.thumbDisplayText = thumbDisplayText;
-      CardiacRisk.graphData.ldlSliderData.value = CardiacRisk.patientInfo.ldl;
-      generateRangeSlider(CardiacRisk.graphData.ldlSliderData);
-      changeBarBackgroundColor(CardiacRisk.graphData.ldlSliderData.id, CardiacRisk.colorClasses.grayBarColor);
-
-      changeThumbBackgroundColor(CardiacRisk.graphData.ldlSliderData.id, thumbBackgroundColor);
-      changeThumbTextColor(CardiacRisk.graphData.ldlSliderData.id, thumbTextColor);
-    }
   }
 
   /**
@@ -541,10 +492,6 @@
         CardiacRisk.graphData.totalCholesterolSliderData.value,
         CardiacRisk.graphData.totalCholesterolSliderData.lowerBound,
         CardiacRisk.graphData.totalCholesterolSliderData.upperBound);
-    updateThumbPosition(CardiacRisk.graphData.ldlSliderData.id,
-        CardiacRisk.graphData.ldlSliderData.value,
-        CardiacRisk.graphData.ldlSliderData.lowerBound,
-        CardiacRisk.graphData.ldlSliderData.upperBound);
     updateThumbPosition(CardiacRisk.graphData.hdlSliderData.id,
         CardiacRisk.graphData.hdlSliderData.value,
         CardiacRisk.graphData.hdlSliderData.lowerBound,

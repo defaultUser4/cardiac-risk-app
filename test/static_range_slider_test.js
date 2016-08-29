@@ -1,7 +1,7 @@
 describe('StaticRangeSlider', function() {
 	describe('buildRangeSliderDataModel', function(){
 		it('returns a data model built for range slider when gender is male', function(){
-			CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,160,100,60,119,false,false);
+			CardiacRisk.patientInfo = setPatientInfo('male',59,0.5,100,60,119,false,false);
 			buildRangeSliderDataModel();
 
 			expect(CardiacRisk.graphData).to.be.an('object');
@@ -18,20 +18,6 @@ describe('StaticRangeSlider', function() {
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.toolTipData.keys).to.eql(['Desirable', 'Borderline High', 'High']);
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.toolTipData.values).to.eql(['140 - 199', '200 - 239', '240 - 401']);
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.toolTipData.styleClass).to.equal('tooltipsterCardiacRiskTotalCholesterol');
-
-
-			expect(CardiacRisk.graphData.ldlSliderData).to.be.an('object');
-			expect(CardiacRisk.graphData.ldlSliderData.id).to.be.equal('ldlBadCholesterolSlider');
-			expect(CardiacRisk.graphData.ldlSliderData.titleLeft).to.be.equal('LDL "Bad" Cholesterol');
-			expect(CardiacRisk.graphData.ldlSliderData.titleRight).to.be.equal('mg/dL');
-			expect(CardiacRisk.graphData.ldlSliderData.lowerBound).to.be.equal(50);
-			expect(CardiacRisk.graphData.ldlSliderData.upperBound).to.be.equal(210);
-			expect(CardiacRisk.graphData.ldlSliderData.barBoundsLowDisplay).to.be.equal('Optimal');
-			expect(CardiacRisk.graphData.ldlSliderData.barBoundsHighDisplay).to.be.equal('High');
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData).to.be.an('object');
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData.keys).to.eql(['Optimal', 'Near/Above Optimal', 'Borderline High', 'High', 'Very High']);
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData.values).to.eql(['50 - 100', '101 - 129', '130 - 159', '160 - 189', '190 - 210']);
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData.styleClass).to.equal('tooltipsterCardiacRiskLDL');
 
 
 			expect(CardiacRisk.graphData.hdlSliderData).to.be.an('object');
@@ -49,7 +35,7 @@ describe('StaticRangeSlider', function() {
 		});
 
 		it('returns a data model built for range slider when gender is female', function(){
-			CardiacRisk.patientInfo = setPatientInfo('female',59,0.5,160,100,60,119,false,false);
+			CardiacRisk.patientInfo = setPatientInfo('female',59,0.5,100,60,119,false,false);
 			buildRangeSliderDataModel();
 
 			expect(CardiacRisk.graphData).to.be.an('object');
@@ -67,19 +53,6 @@ describe('StaticRangeSlider', function() {
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.toolTipData.values).to.eql(['140 - 199', '200 - 239', '240 - 401']);
 			expect(CardiacRisk.graphData.totalCholesterolSliderData.toolTipData.styleClass).to.equal('tooltipsterCardiacRiskTotalCholesterol');
 
-
-			expect(CardiacRisk.graphData.ldlSliderData).to.be.an('object');
-			expect(CardiacRisk.graphData.ldlSliderData.id).to.be.equal('ldlBadCholesterolSlider');
-			expect(CardiacRisk.graphData.ldlSliderData.titleLeft).to.be.equal('LDL "Bad" Cholesterol');
-			expect(CardiacRisk.graphData.ldlSliderData.titleRight).to.be.equal('mg/dL');
-			expect(CardiacRisk.graphData.ldlSliderData.lowerBound).to.be.equal(50);
-			expect(CardiacRisk.graphData.ldlSliderData.upperBound).to.be.equal(210);
-			expect(CardiacRisk.graphData.ldlSliderData.barBoundsLowDisplay).to.be.equal('Optimal');
-			expect(CardiacRisk.graphData.ldlSliderData.barBoundsHighDisplay).to.be.equal('High');
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData).to.be.an('object');
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData.keys).to.eql(['Optimal', 'Near/Above Optimal', 'Borderline High', 'High', 'Very High']);
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData.values).to.eql(['50 - 100', '101 - 129', '130 - 159', '160 - 189', '190 - 210']);
-			expect(CardiacRisk.graphData.ldlSliderData.toolTipData.styleClass).to.equal('tooltipsterCardiacRiskLDL');
 
 
 			expect(CardiacRisk.graphData.hdlSliderData).to.be.an('object');
