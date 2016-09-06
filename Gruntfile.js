@@ -85,7 +85,7 @@ module.exports = function (grunt) {
         },
         move: [{base: 'build', src: '**/*', dest: 'build'}]
       },
-      src: ['build/**/*', 'index.html', 'launch.html', '.gitignore', 'README.md', 'images/*']
+      src: ['build/**/*', 'index.html', 'launch.html', 'landing.html', '.gitignore', 'README.md', 'images/*']
     }
 
   });
